@@ -64,3 +64,4 @@ hhcareerfair/settings_override.py
 #Default flask virtualenv
 flask
 virtualenv.py
+env
