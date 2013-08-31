@@ -15,7 +15,7 @@ requires = [
     'pytz==2013b',
     'flask-babel==0.8',
     'flup',
-    'flask-admin'
+    'flask-admin',
     'psycopg2',
 ]
 
