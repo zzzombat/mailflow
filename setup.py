@@ -17,6 +17,7 @@ requires = [
     'flup',
     'flask-admin',
     'psycopg2',
+    'fs',
 ]
 
 setup(
