@@ -48,6 +48,10 @@ def main():
     args = get_args()
     
     inbox = models.Inbox.query.filter(models.Inbox.login==args.user).first()
+    if not inbox:
+        logger.error('cannot find inbox with login %s', args.user)
+        print >> sys.stderr, "Cannot find inbox with login %s" % args.user
+        return 1
 
     logger.info("new message by user '%s' from '%s' to '%s'", args.user, args.sender, args.recipient)
     try:

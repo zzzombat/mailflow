@@ -1,48 +1,105 @@
 mailflow
 ========
 
-First hackathon project by Eastwood team and others
+First hackathon project by Eastwood team and others.
 
 
-Postfix configuration
----------------------
+Installation on Ubuntu 12.04
+----------------------------
 
-/etc/postfix/main.cf:
+Create and activate virtualenv:
 
 ::
 
-    smtpd_recipient_restrictions =
-        permit,
-        reject
+    mkdir ~/envs/
+    virtualenv --system-site-packages ~/envs/mailflow
+    . ~/envs/mailflow/bin/activate
 
-    virtual_transport = mailflow
-    virtual_mailbox_domains = pgsql:/etc/postfix/mailflow/domains.map.cf
-    virtual_mailbox_maps = pgsql:/etc/postfix/mailflow/mailboxes.map.cf
+Install mailflow package:
 
-/etc/postfix/master.cf:
+::
+
+    pip install git+https://github.com/zzzombat/mailflow.git
+
+
+Install and configure postgresql server:
+
+::
+
+    sudo aptitude install postgresql -y
+    sudo su - postgres -c "createuser -S -R -D mailflow -P"
+    sudo su - postgres -c "createdb mailflow -O mailflow"
+
+Create mailflow database:
+
+::
+
+    mailflow-initdb
+
+
+Postfix configuration
+~~~~~~~~~~~~~~~~~~~~~
+
+Installation:
+
+::
+
+    sudo aptitude install libsasl2-modules-sql libsasl2-2 sasl2-bin  libsasl2-modules postfix
+
+
+Configure authentication over mailflow database. /etc/postfix/sasl/smtpd.conf:
+
+::
+
+    pwcheck_method: auxprop
+    auxprop_plugin: sql
+    mech_list: PLAIN LOGIN
+    sql_engine: pgsql
+    sql_user: mailflow
+    sql_hostnames: 127.0.0.1
+    sql_password: secret
+    sql_database: mailflow
+    sql_select: SELECT password FROM "inbox" WHERE login = '%u'
+
+
+Custom mailflow delivery agent. /etc/postfix/master.cf:
 
 ::
 
     mailflow     unix -       n       n       -       -       pipe
-    flags=R user=nobody argv=/home/kubus/envs/mailflow/bin/mailflow-deliver ${recipient} ${sender}
+        flags=R user=kubus argv=/home/kubus/envs/mailflow/bin/mailflow-deliver ${sasl_username} ${recipient} ${sender}
+
+    2525      inet  n       -       -       -       -       smtpd
+        -o smtpd_sasl_auth_enable=yes
+        -o broken_sasl_auth_clients=yes
+        -o smtpd_sasl_type=cyrus
+        -o smtpd_sasl_security_options=noanonymous
+        -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
+        -o virtual_transport=mailflow
+        -o virtual_mailbox_domains=pgsql:/etc/postfix/mailflow/domains.map.cf
+        -o virtual_mailbox_maps=pgsql:/etc/postfix/mailflow/mailboxes.map.cf
+
+/etc/postfix/mailflow/domains.map.cf
+
+::
+
+    hosts = 127.0.0.1
+    user = mailflow
+    password = secret
+    dbname = mailflow
+    query = SELECT '%s'
 
 
-
-Database configuration
----------------------
-
-Create database and grant access:
+/etc/postfix/mailflow/mailboxes.map.cf
 
 ::
 
-    sudo su postgres
-    createuser -s username(Ваш логин в ОС)
-    createdb mailflow
-
-Init database:
-
-::
-    python src/mailflow/front/migrate/init_db.py
+    hosts = 127.0.0.1
+    user = mailflow
+    password = secret
+    dbname = mailflow
+    result_format = mailflow/%s/
+    query = SELECT '%s'
 
 
 RabbitMQ setup
@@ -74,3 +131,30 @@ Add user:
    sudo rabbitmqctl add_user mailflow youneverguess
    sudo rabbitmqctl add_vhost /mail
    sudo rabbitmqctl set_permissions -p /mail mailflow ".*" ".*" ".*"
+
+Testing
+-------
+
+Start web interface:
+
+::
+
+    mailflow-front
+
+Go to the /admin url and create new inbox with login 'test' and password 'test'. To send a test
+message you could use the following code:
+
+::
+
+    #!/usr/bin/env python
+
+    import smtplib
+
+    def main():
+        conn = smtplib.SMTP('localhost', 2525)
+        conn.login('test', 'test')
+        conn.sendmail('sender@example.com', 'recipient@example.com', "Hello!")
+
+    if __name__ == '__main__':
+        main()
+
