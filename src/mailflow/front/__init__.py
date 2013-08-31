@@ -1,6 +1,8 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
+import flask.ext.restless
+import mailflow.front.api_utils
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object('mailflow.settings')
@@ -11,17 +13,16 @@ import views, models, admin
 user_datastore = SQLAlchemyUserDatastore(db, models.User, models.Role)
 security = Security(app, user_datastore)
 
-from mailflow.front import db, user_datastore
+manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
 
-def initdb():
-    db.create_all()
-    user_datastore.create_role(name='admin', description='')
-    user = user_datastore.create_user(email='admin@example.com', password='1234')
-    db.session.commit()
-    admin_role = user_datastore.find_role("admin")
-    user_datastore.add_role_to_user(user, admin_role)
-    db.session.commit()
-
+manager.create_api(models.Inbox, methods=['GET', 'POST', 'DELETE'])
+manager.create_api(models.Message, methods=['GET', 'DELETE'],
+                   preprocessors={
+                       'GET_MANY':[api_utils.pre_get_many_message],
+                   },
+                   postprocessors={
+                       'GET_MANY':[api_utils.post_get_many_message],
+                   })
 
 def main():
     app.run(debug = True)
