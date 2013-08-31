@@ -28,3 +28,9 @@ Postfix configuration
 
 
 
+Database configuration
+---------------------
+
+sudo su postgres
+createuser -s username(Ваш логин в ОС)
+createdb mailflow
