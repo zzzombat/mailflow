@@ -9,11 +9,13 @@
     <!-- Bootstrap core CSS -->
     <link href="../static/styles/lib/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="../static/styles/signin.css" rel="stylesheet">
+    <!-- Custom styles -->
+    {% block css %}{% endblock %}
+
+    <!-- Custom js -->
+    {% block js %}{% endblock %}
 </head>
 <body>
-<hr>
 {% block content %}{% endblock %}
 </body>
 </html>
