@@ -22,6 +22,7 @@ setup(
     entry_points={
         'console_scripts': [
             'mailflow-front = mailflow.front:main',
+            'mailflow-deliver = mailflow.deliver:main',
         ]
     },
 )
