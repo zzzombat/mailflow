@@ -1,4 +1,4 @@
-from app import app
+from mailflow.front import app
 
 @app.route('/')
 @app.route('/index')
