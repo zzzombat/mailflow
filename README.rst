@@ -31,16 +31,16 @@ Postfix configuration
 Database configuration
 ---------------------
 
-Create dddatabase and grant access:
+Create database and grant access:
 
 ::
 
     sudo su postgres
     createuser -s username(Ваш логин в ОС)
     createdb mailflow
-    
+
 Init database:
 
 ::
-    python mailfront/front/migrate/init_db.py 
 
+    python src/mailflow/front/migrate/init_db.py
