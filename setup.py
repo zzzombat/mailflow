@@ -18,6 +18,8 @@ requires = [
     'flask-admin',
     'psycopg2',
     'fs',
+    'kombu==2.5.14',
+    'librabbitmq==1.0.1'
 ]
 
 setup(
