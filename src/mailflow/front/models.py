@@ -6,6 +6,7 @@ from flask.ext.security import UserMixin, RoleMixin
 from sqlalchemy.event import listen
 
 from mailflow.front import db
+from mailflow import storage
 from mailflow import settings
 
 
@@ -66,9 +67,13 @@ listen(Inbox, 'before_insert', generate_credentials_listener)
 class Message(db.Model, GeneralMixin):
     id = db.Column(db.Integer, primary_key=True)
     inbox_id = db.Column(db.Integer, db.ForeignKey('inbox.id'))
-    from_addr = db.Column(db.String(255), index=True, unique=True)
-    to_addr = db.Column(db.String(255), index=True, unique=True)
+    from_addr = db.Column(db.String(255))
+    to_addr = db.Column(db.String(255))
     subject = db.Column(db.Text())
     body_plain = db.Column(db.Text())
     body_html = db.Column(db.Text())
     source = db.Column(db.Text())
+
+    def get_source_file(self, mode='ab+'):
+        return storage.fs.open(self.source, mode)
+

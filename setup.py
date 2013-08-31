@@ -18,11 +18,11 @@ requires = [
     'flask-admin',
     'psycopg2',
     'fs',
+    'pyzmail',
 ]
 
 setup(
     name='mailflow',
-    author_email='kubus@openpz.org',
     url='',
     license='GPLv3',
     version=mailflow.__version__,
@@ -33,6 +33,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
+            'mailflow-initdb = mailflow.front:initdb',
             'mailflow-front = mailflow.front:main',
             'mailflow-deliver = mailflow.deliver:main',
         ]
