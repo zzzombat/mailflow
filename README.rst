@@ -31,7 +31,7 @@ Postfix configuration
 Database configuration
 ---------------------
 
-Create dddatabase and grant access:
+Create database and grant access:
 
 ::
 
