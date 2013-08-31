@@ -65,3 +65,4 @@ hhcareerfair/settings_override.py
 flask
 virtualenv.py
 env
+distribute-0.6.10.tar.gz
