@@ -16,6 +16,7 @@ requires = [
     'flask-babel==0.8',
     'flup',
     'flask-admin'
+    'psycopg2',
 ]
 
 setup(
