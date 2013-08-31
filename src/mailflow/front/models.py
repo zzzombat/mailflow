@@ -1,7 +1,12 @@
-from mailflow.front import db
 import datetime
+import string
+from random import sample
 
 from flask.ext.security import UserMixin, RoleMixin
+from sqlalchemy.event import listen
+
+from mailflow.front import db
+from mailflow import settings
 
 
 roles_users = db.Table('roles_users',
@@ -11,6 +16,11 @@ roles_users = db.Table('roles_users',
 
 def _get_date():
     return datetime.datetime.now()
+
+
+def _generate_string(count):
+    sample_string = sample(string.letters + string.digits, count)
+    return ''.join(sample_string)
 
 
 class GeneralMixin:
@@ -40,6 +50,17 @@ class Inbox(db.Model, GeneralMixin):
     login = db.Column(db.String(255), index=True, unique=True)
     password = db.Column(db.String(255))
     name = db.Column(db.String(255), index=True, unique=True)
+
+    def generate_credentials(self):
+        if not self.login:
+            self.login = _generate_string(settings.INBOX_LOGIN_LENGTH)
+
+        if not self.password:
+            self.password = _generate_string(settings.INBOX_PASSWORD_LENGTH)
+
+def generate_credentials_listener(mapper, connect, target):
+    target.generate_credentials()
+listen(Inbox, 'before_insert', generate_credentials_listener)
 
 
 class Message(db.Model, GeneralMixin):
