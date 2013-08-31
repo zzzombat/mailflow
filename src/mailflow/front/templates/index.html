@@ -1,4 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Mailflow index page</h1>
+
+<div class="container">
+
+  <form class="form-signin">
+    <h2 class="form-signin-heading">Please sign in</h2>
+    <input type="text" class="form-control" placeholder="Email address" autofocus>
+    <input type="password" class="form-control" placeholder="Password">
+    <label class="checkbox">
+      <input type="checkbox" value="remember-me"> Remember me
+    </label>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+
+</div> <!-- /container -->
+
 {% endblock %}
