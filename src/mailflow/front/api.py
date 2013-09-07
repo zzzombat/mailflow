@@ -68,7 +68,7 @@ class Message(restful.Resource):
         return {'id': message.id,
                 'from_addr': message.from_addr,
                 'to_addr': message.from_addr,
-                'subject': message.to_addr,
+                'subject': message.subject,
                 'body_plain': message.body_plain,
                 'body_html': message.body_html,
                 }
