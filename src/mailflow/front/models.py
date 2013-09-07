@@ -52,6 +52,10 @@ class Inbox(db.Model, GeneralMixin):
     password = db.Column(db.String(255))
     name = db.Column(db.String(255), index=True, unique=True)
 
+    def __init__(self, name=None):
+        self.name = name
+        super(Inbox, self).__init__()
+
     def generate_credentials(self):
         if not self.login:
             self.login = _generate_string(settings.INBOX_LOGIN_LENGTH)
