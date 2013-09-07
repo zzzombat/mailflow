@@ -8,9 +8,9 @@
 
 <div class="container">
 
-    <form class="form-signin" method="post" name="login">
+    <form class="form-signin" method="post" name="reg">
         {{form.hidden_tag()}}
-        <h2 class="form-signin-heading">Войти</h2>
+        <h2 class="form-signin-heading">Регистрация</h2>
         Please enter your email:<br>{{form.email}}<br>
         {% for error in form.errors.email %}
             <span style="color: red;">[{{error}}]</span>
@@ -19,10 +19,8 @@
         {% for error in form.errors.password %}
             <span style="color: red;">[{{error}}]</span>
         {% endfor %}<br>
-        <p>{{form.remember_me}} Remember Me</p>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Вход</button>
         <br/>
-        <a href="/reg">Регистрация</a>
 
     </form>
 

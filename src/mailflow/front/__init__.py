@@ -1,10 +1,14 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
+from flask.ext.login import LoginManager
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object('mailflow.settings')
 db = SQLAlchemy(app)
+
+lm = LoginManager()
+lm.init_app(app)
 
 import views, models, admin
 
@@ -25,3 +29,4 @@ def initdb():
 
 def main():
     app.run(debug = True)
+
