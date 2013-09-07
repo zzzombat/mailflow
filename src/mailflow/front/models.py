@@ -29,6 +29,13 @@ class GeneralMixin:
     creation_date = db.Column(db.DateTime(), default=_get_date)
     modification_date = db.Column(db.DateTime(), onupdate=_get_date)
 
+    def to_dict(self):
+        d = {}
+        for column in self.__table__.columns:
+            d[column.name] = getattr(self, column.name)
+
+        return d
+
 
 class Role(db.Model, RoleMixin, GeneralMixin):
     id = db.Column(db.Integer(), primary_key=True)

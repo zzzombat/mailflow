@@ -18,16 +18,45 @@ def api_login_required(funk):
 class MessageList(restful.Resource):
     @api_login_required
     def get(self):
-        messages = models.db.session.query(models.Message).join(models.Message.inbox) \
-                                                          .filter_by(user_id=g.user.id)
         inbox_id = int(request.args.get('inbox_id', 0))
-        if inbox_id:
-            messages = messages.filter_by(id=inbox_id)
-        result = {
+        if not inbox_id:
+            return {
+                'status': 400,
+                'message': "Parameter inbox_id is required"
+            }, 400
+
+        inbox = models.Inbox.query.get(inbox_id)
+
+        if inbox is None:
+            return {
+                'status': 404,
+                'message': "Inbox with id={0} not found".format(inbox_id),
+            }, 404
+
+        if inbox.user_id != g.user.id:
+            return {
+                'status': 403,
+                'message': "You are not allowed to access mailbox with id id={0}".format(inbox_id),
+            }, 403
+
+        messages = models.Message.query \
+                                 .filter_by(inbox_id=inbox_id) \
+                                 .order_by(models.Message.creation_date.desc())
+
+        data = [
+            dict(
+                id=m.id,
+                from_addr=m.from_addr,
+                to_addr=m.to_addr,
+                subject=m.subject,
+                creation_date=m.creation_date.strftime('%s%f')[:-3]
+            )
+            for m in messages.all()
+        ]
+        return {
             'count': len(messages.all()),
-            'data': [dict(id=m.id, from_addr=m.from_addr, to_addr=m.to_addr, subject=m.subject) for m in messages.all()]
+            'data': data
         }
-        return result
 
 
 class Message(restful.Resource):
