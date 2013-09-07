@@ -1,6 +1,12 @@
-<div class="list-group">
+<div class="list-group" ng-controller="DashboardInboxesCtrl">
     <a href="#/{{inbox.id}}" class="list-group-item"  ng-repeat="inbox in inboxes">
         <span class="glyphicon glyphicon-envelope"></span> {{inbox.name}}
         <span class="badge pull-right">{{inbox.count}}</span>
     </a>
+    <div class="list-group-item">
+      <div class="input-group">
+        <span class="glyphicon glyphicon-plus input-group-addon"></span>
+        <input type="text" ng-model="inbox.name" class="form-control"/>
+      </div>
+    </div>
 </div>

@@ -10,6 +10,8 @@ angular.module('inboxServices', ['ngResource'])
         return $resource('/static/data/messages/:inboxId.json', {}, {
             get: {method: 'GET', params: {}, isArray: true, cache: false, responseType: 'json'}
         });
+    }).factory('Message', function($resource){
+        return $resource('/static/data/message/:messageId.json', {})
     }).factory('Inboxes', function($resource){
         return $resource('/static/data/inboxes.json', {},  {
             get: {method: 'GET', params: {}, isArray: true, cache: false, responseType: 'json'}
