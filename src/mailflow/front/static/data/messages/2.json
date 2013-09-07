@@ -1,0 +1,51 @@
+[
+    {
+        "id" : 4,
+        "from" : "from@mail.ru",
+        "to" : "to@mail.ru",
+        "subject" : "click me",
+        "date" : "1288328653006"
+    },
+    {
+        "id" : 5,
+        "from" : "from@mail.ru",
+        "to" : "to@mail.ru",
+        "subject" : "click me",
+        "date" : "1288328653006"
+    },
+    {
+        "id" : 6,
+        "from" : "from@mail.ru",
+        "to" : "to@mail.ru",
+        "subject" : "click me",
+        "date" : "1288328653006"
+    },
+    {
+        "id" : 7,
+        "from" : "from@mail.ru",
+        "to" : "to@mail.ru",
+        "subject" : "click me",
+        "date" : "1288328653006"
+    },
+    {
+        "id" : 8,
+        "from" : "from@mail.ru",
+        "to" : "to@mail.ru",
+        "subject" : "click me",
+        "date" : "1288328653006"
+    },
+    {
+        "id" : 9,
+        "from" : "from@mail.ru",
+        "to" : "to@mail.ru",
+        "subject" : "click me",
+        "date" : "1288328653006"
+    },
+    {
+        "id" : 10,
+        "from" : "from@mail.ru",
+        "to" : "to@mail.ru",
+        "subject" : "click me",
+        "date" : "1288328653006"
+    }
+]
