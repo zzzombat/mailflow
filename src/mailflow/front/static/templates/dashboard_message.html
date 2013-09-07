@@ -1,0 +1,36 @@
+<div class="panel-container">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><strong>Письмо #{{message.id}}</strong> / {{inbox.name}}
+            <span class="pull-right">
+                <a data-toggle="modal" href="#inboxModal">
+                    <span class="glyphicon glyphicon-wrench"></span>
+                </a>
+            </span>
+        </div>
+        <div class="panel-body">
+          <ul class="list-group">
+            <li class="list-group-item">
+              From: <span>{{message.from}}</span>
+            </li>
+            <li class="list-group-item">
+              To: <span>{{message.to}}</span>
+            </li>
+            <li class="list-group-item">
+              Subject: <span>{{message.subject}}</span>
+            </li>
+            <li class="list-group-item">
+              <ul class="nav nav-tabs" id="tab" class="btn-group" data-toggle="buttons-radio">
+                <li class="active"><a href="#html" data-toggle="tab">Body HTML</a></li>
+                <li><a href="#plain" data-toggle="tab">Body Plain</a></li>
+              </ul>
+
+              <div class="tab-content">
+                <div class="tab-pane active" id="html" ng-bind-html-unsafe="message.body_html"></div>
+                <div class="tab-pane" id="plain">{{message.body_plain}}</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+    </div>
+</div>

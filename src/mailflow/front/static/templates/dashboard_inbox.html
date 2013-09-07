@@ -21,24 +21,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="email in messages">
-                <td>{{email.id}}</td>
-                <td>{{email.from}}</td>
-                <td>{{email.to}}</td>
-                <td>{{email.subject}}</td>
-                <td>{{email.date | date:'MM/dd/yyyy h:mm'}}</td>
-                <td><a href="#"><span class="glyphicon glyphicon-eye-open"></span></a></td>
+            <tr ng-repeat="message in messages">
+                <td>{{message.id}}</td>
+                <td>{{message.from}}</td>
+                <td>{{message.to}}</td>
+                <td>{{message.subject}}</td>
+                <td>{{message.date | date:'MM/dd/yyyy h:mm'}}</td>
+                <td><a href="#/{{inbox.id}}/message/{{message.id}}"><span class="glyphicon glyphicon-eye-open"></span></a></td>
             </tr>
             </tbody>
         </table>
 
-    </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-heading">Текст письма</div>
-    <div class="panel-body">
-        Письмо
     </div>
 </div>
 
