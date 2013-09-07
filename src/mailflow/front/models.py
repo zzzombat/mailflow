@@ -4,6 +4,7 @@ from random import sample
 
 from flask.ext.security import UserMixin, RoleMixin
 from sqlalchemy.event import listen
+from sqlalchemy.orm import relationship
 
 from mailflow.front import db
 from mailflow import storage
@@ -66,6 +67,11 @@ class Inbox(db.Model, GeneralMixin):
     login = db.Column(db.String(255), index=True, unique=True)
     password = db.Column(db.String(255))
     name = db.Column(db.String(255), index=True, unique=True)
+    user = relationship("User")
+
+    def __init__(self, name=None):
+        self.name = name
+        super(Inbox, self).__init__()
 
     def generate_credentials(self):
         if not self.login:
@@ -88,6 +94,7 @@ class Message(db.Model, GeneralMixin):
     body_plain = db.Column(db.Text())
     body_html = db.Column(db.Text())
     source = db.Column(db.Text())
+    inbox = relationship("Inbox")
 
     def get_source_file(self, mode='ab+'):
         return storage.fs.open(self.source, mode)

@@ -20,7 +20,8 @@ requires = [
     'fs',
     'pyzmail',
     'kombu==2.5.14',
-    'librabbitmq==1.0.1'
+    'librabbitmq==1.0.1',
+    'flask-restful',
 ]
 
 setup(
