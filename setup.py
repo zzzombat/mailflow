@@ -22,6 +22,7 @@ requires = [
     'kombu==2.5.14',
     'librabbitmq==1.0.1',
     'flask-restful',
+    'blinker==1.2'
 ]
 
 setup(
