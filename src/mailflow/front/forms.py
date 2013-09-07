@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask.ext.wtf import Form
 from wtforms.validators import Required, ValidationError
 from wtforms import TextField, BooleanField, PasswordField
@@ -12,12 +13,13 @@ class LoginForm(Form):
     def validate_email(form, field):
         user = db.session.query(models.User).filter_by(email=field.data).first()
 
-        if user is None:
-            raise ValidationError('Invalid email')
+        if user is None or user.password != form.password.data:
+            message = "Неверный email или пароль".decode('utf-8')
+            raise ValidationError(message)
 
-        if user.password != form.password.data:
-            raise ValidationError('Invalid password')
-
+        if not user.active:
+            message = "Учетная запись не активна".decode('utf-8')
+            raise ValidationError(message)
 
 
 class RegistrationForm(Form):
@@ -26,5 +28,7 @@ class RegistrationForm(Form):
 
     def validate_email(form, field):
         if db.session.query(models.User).filter_by(email=field.data).count() > 0:
-            raise ValidationError('Duplicate email')
+            message = "Пользователь с таким адресом уже существует".decode('utf-8')
+            raise ValidationError(message)
+
 

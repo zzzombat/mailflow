@@ -11,14 +11,14 @@
     <form class="form-signin" method="post" name="reg">
         {{form.hidden_tag()}}
         <h2 class="form-signin-heading">Регистрация</h2>
-        Please enter your email:<br>{{form.email}}<br>
+        {{form.email (class="form-control", placeholder="Введите email" )}}
+        {{form.password (class="form-control", placeholder="Введите пароль" )}}
         {% for error in form.errors.email %}
-            <span style="color: red;">[{{error}}]</span>
-        {% endfor %}<br>
-        Please enter your email:<br>{{form.password}}<br>
+            <span style="color: red;">{{error}}</span>
+        {% endfor %}
         {% for error in form.errors.password %}
-            <span style="color: red;">[{{error}}]</span>
-        {% endfor %}<br>
+            <span style="color: red;">{{error}}</span>
+        {% endfor %}
         <button class="btn btn-lg btn-primary btn-block" type="submit">Вход</button>
         <br/>
 

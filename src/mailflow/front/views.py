@@ -6,23 +6,18 @@ from forms import LoginForm, RegistrationForm
 from flask.ext.login import login_user, logout_user, current_user, login_required
 
 
-@app.route('/test')
-@login_required
-def test():
-    user = g.user
-    return render_template('test.html', user=user)
-
-
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/index', methods = ['GET', 'POST'])
+@app.route('/login', methods = ['GET', 'POST'])
 def index():
+    user = g.user
     form = LoginForm()
     if form.validate_on_submit():
         user = models.User.query.filter_by(email = form.email.data).first()
         session['remember_me'] = form.remember_me.data
-        login_user(user, remember = session['remember_me']  )
-        return redirect('/test')
-    return render_template('index.html', form = form)
+        login_user(user, remember = session['remember_me'])
+        return redirect('/dashboard')
+    return render_template('index.html', form = form, user=user)
 
 @app.route('/dashboard')
 @login_required
@@ -35,10 +30,10 @@ def dashboard():
 def reg():
     form = RegistrationForm()
     if form.validate_on_submit():   
-        user = models.User(email=form.email.data, password=form.password.data)
+        user = models.User(email=form.email.data, password=form.password.data, active=True)
         db.session.add(user)
         db.session.commit()    
-        return redirect('/test')
+        return redirect('/dashboard')
     return render_template('reg.html', form = form)
 
 @lm.user_loader
@@ -52,4 +47,4 @@ def before_request():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect("/index")
