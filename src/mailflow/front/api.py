@@ -67,7 +67,7 @@ class Message(restful.Resource):
             return None, 404
         return {'id': message.id,
                 'from_addr': message.from_addr,
-                'to_addr': message.from_addr,
+                'to_addr': message.to_addr,
                 'subject': message.subject,
                 'body_plain': message.body_plain,
                 'body_html': message.body_html,
