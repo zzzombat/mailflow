@@ -14,3 +14,8 @@ function DashboardInboxCtrl($scope, $routeParams, Messages, Inbox) {
     $scope.inbox = Inbox.get({inboxId: $routeParams.inboxId});
     $scope.messages = Messages.get({inboxId: $routeParams.inboxId});
 }
+
+function MessageInfoCtrl($scope, $http, $routeParams, Message, Inbox) {
+    $scope.inbox = Inbox.get({inboxId: $routeParams.inboxId});
+    $scope.message = Message.get({messageId: $routeParams.messageId});
+}

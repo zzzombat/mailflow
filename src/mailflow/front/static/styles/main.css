@@ -1,7 +1,6 @@
 /*main.css*/
 
 .panel-container {
-    max-height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
     margin-bottom: 20px;
