@@ -66,7 +66,7 @@ class Inbox(db.Model, GeneralMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     login = db.Column(db.String(255), index=True, unique=True)
     password = db.Column(db.String(255))
-    name = db.Column(db.String(255), index=True, unique=True)
+    name = db.Column(db.String(255), index=True)
     user = relationship("User")
 
     def __init__(self, name=None):
@@ -79,6 +79,7 @@ class Inbox(db.Model, GeneralMixin):
 
         if not self.password:
             self.password = _generate_string(settings.INBOX_PASSWORD_LENGTH)
+
 
 def generate_credentials_listener(mapper, connect, target):
     target.generate_credentials()
@@ -94,8 +95,7 @@ class Message(db.Model, GeneralMixin):
     body_plain = db.Column(db.Text())
     body_html = db.Column(db.Text())
     source = db.Column(db.Text())
-    inbox = relationship("Inbox")
+    inbox = relationship("Inbox", cascade="all")
 
     def get_source_file(self, mode='ab+'):
         return storage.fs.open(self.source, mode)
-

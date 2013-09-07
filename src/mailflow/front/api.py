@@ -19,7 +19,7 @@ class MessageList(restful.Resource):
     @api_login_required
     def get(self):
         messages = models.db.session.query(models.Message).join(models.Message.inbox) \
-                .filter_by(user_id=g.user.id)
+                                                          .filter_by(user_id=g.user.id)
         inbox_id = int(request.args.get('inbox_id', 0))
         if inbox_id:
             messages = messages.filter_by(id=inbox_id)
@@ -70,7 +70,7 @@ class InboxList(restful.Resource):
             inbox = models.Inbox(**request.json)
         except Exception:
             return None, 400
-            inbox.user_id = g.user.id
+        inbox.user_id = g.user.id
         models.db.session.add(inbox)
         try:
             models.db.session.commit()

@@ -6,6 +6,9 @@
                 <a data-toggle="modal" href="#inboxModal">
                     <span class="glyphicon glyphicon-wrench"></span>
                 </a>
+                <a ng-click="truncateInbox()">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
             </span>
         </div>
 
@@ -21,10 +24,10 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="message in messages">
+            <tr ng-repeat="message in messages.data">
                 <td>{{message.id}}</td>
-                <td>{{message.from}}</td>
-                <td>{{message.to}}</td>
+                <td>{{message.from_addr}}</td>
+                <td>{{message.to_addr}}</td>
                 <td>{{message.subject}}</td>
                 <td>{{message.date | date:'MM/dd/yyyy h:mm'}}</td>
                 <td><a href="#/{{inbox.id}}/message/{{message.id}}"><span class="glyphicon glyphicon-eye-open"></span></a></td>
@@ -78,7 +81,7 @@
                         <label class="col-lg-2 control-label">Порт:</label>
 
                         <div class="col-lg-10">
-                            <p class="form-control-static">1313</p>
+                            <p class="form-control-static">2525</p>
                         </div>
                     </div>
                 </form>

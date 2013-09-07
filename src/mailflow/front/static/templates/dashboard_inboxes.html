@@ -1,14 +1,17 @@
 <div class="list-group" ng-controller="DashboardInboxesCtrl">
-    <a href="#/{{inbox.id}}" class="list-group-item"  ng-repeat="inbox in inboxes">
+    <a href="#/{{inbox.id}}" class="list-group-item"  ng-repeat="inbox in inboxes.data">
         <span class="glyphicon glyphicon-envelope"></span> {{inbox.name}}
         <span class="badge pull-right">{{inbox.count}}</span>
+        <span class="pull-right glyphicon glyphicon-remove" ng-click="deleteInbox(inbox.id)"></span>
     </a>
     <div class="list-group-item">
-      <div class="input-group">
-        <span class="input-group-addon">
-          <span class="glyphicon glyphicon-plus"></span>
-        </span>
-        <input type="text" ng-model="inbox.name" class="form-control"/>
-      </div>
+      <form ng-submit="addInbox()">
+        <div class="input-group">
+          <input type="text" ng-model="inbox.name" class="form-control"/>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
+          </span>
+        </div>
+      </form>
     </div>
 </div>

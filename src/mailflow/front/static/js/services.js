@@ -7,15 +7,18 @@
  */
 angular.module('inboxServices', ['ngResource'])
     .factory('Messages', function ($resource) {
-        return $resource('/static/data/messages/:inboxId.json', {}, {
-            get: {method: 'GET', params: {}, isArray: true, cache: false, responseType: 'json'}
+        return $resource('/api/message/', {}, {
+            get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'}
         });
     }).factory('Message', function($resource){
-        return $resource('/static/data/message/:messageId.json', {})
+        return $resource('/api/message/:messageId', {})
     }).factory('Inboxes', function($resource){
-        return $resource('/static/data/inboxes.json', {},  {
-            get: {method: 'GET', params: {}, isArray: true, cache: false, responseType: 'json'}
+        return $resource('/api/inbox', {},  {
+            get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'},
+            post: {method: 'POST', params: {}, isArray: false, cache: false, responseType: 'json'}
         });
     }).factory('Inbox', function($resource){
-        return $resource('/static/data/inbox/:inboxId.json', {})
+        return $resource('/api/inbox/:inboxId', {}, {
+            get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'}
+        })
     });
