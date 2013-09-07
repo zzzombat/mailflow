@@ -8,9 +8,11 @@
 <script src="../static/js/lib/jquery.min.js" type="text/javascript"></script>
 <script src="../static/js/lib/bootstrap.min.js" type="text/javascript"></script>
 <script src="../static/js/lib/angular.min.js" type="text/javascript"></script>
+<!--<script src="../static/js/lib/angular-ui-router.min.js" type="text/javascript"></script>-->
 <script src="../static/js/app.js" type="text/javascript"></script>
 <script src="../static/js/controllers.js" type="text/javascript"></script>
-<script src="../static/js/routes.js" type="text/javascript"></script>
+<script src="../static/js/services.js" type="text/javascript"></script>
+<script src="../static/js/lib/angular-resource.js" type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
@@ -23,11 +25,11 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Mailflow</a>
+            <a class="navbar-brand" href="/dashboard">Mailflow</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Главная</a></li>
+                <li class="active"><a href="/dashboard">Главная</a></li>
                 <li><a data-toggle="modal" href="#profileModal">Профиль</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -41,72 +43,17 @@
 <div class="container">
 
 <div class="row">
-    <div class="col-md-4">
+  {% raw %}
+    <div class="col-md-4" ng-controller='DashboardInboxesCtrl'>
         <div class="list-group">
-            <a href="#" class="list-group-item active"><span class="glyphicon glyphicon-envelope"></span> Inbox 1
-                <span class="badge pull-right">2</span></a>
-            <a href="#" class="list-group-item"><span class="glyphicon glyphicon-envelope"></span> Inbox 2 <span
-                    class="badge pull-right">0</span></a>
-            <a href="#" class="list-group-item"><span class="glyphicon glyphicon-envelope"></span> Спам <span
-                    class="badge pull-right">0</span></a>
+            <a href="#/{{inbox.id}}" class="list-group-item"  ng-repeat="inbox in inboxes">
+                <span class="glyphicon glyphicon-envelope"></span> {{inbox.name}}
+                <span class="badge pull-right">{{inbox.count}}</span>
+            </a>
         </div>
-
     </div>
-    <div class="col-md-8">
-
-        <div class="panel-container">
-            <div class="panel panel-default">
-                <!-- Default panel contents -->
-                <div class="panel-heading"><strong>Письма</strong> / Inbox 1
-                    <span class="pull-right">
-                        <a data-toggle="modal" href="#inboxModal">
-                            <span class="glyphicon glyphicon-wrench"></span>
-                        </a>
-                    </span>
-                </div>
-
-                <table class="table table-condensed">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>От</th>
-                        <th>Кому</th>
-                        <th>Тема</th>
-                        <th>Время</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>sender@mail.com</td>
-                        <td>test@mailflow.net</td>
-                        <td>Test message 1</td>
-                        <td>31/08/2013 13:34</td>
-                        <td><a href="#"><span class="glyphicon glyphicon-eye-open"></span></a></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>sender@mail.com</td>
-                        <td>test@mailflow.net</td>
-                        <td>Тестирование АБВ</td>
-                        <td>31/08/2013 13:38</td>
-                        <td><a href="#"><span class="glyphicon glyphicon-eye-open"></span></a></td>
-                    </tr>
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">Текст письма</div>
-            <div class="panel-body">
-                Письмо
-            </div>
-        </div>
-
-    </div>
+    <div class="col-md-8" ng-view></div>
+    {% endraw %}
 </div>
 
 <!-- Modals -->
@@ -140,65 +87,6 @@
 
                         <div class="col-lg-10">
                             <p class="form-control-static">31/08/2013 12:12</p>
-                        </div>
-                    </div>
-                </form>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-primary">Сохранить</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-
-<div class="modal fade" id="inboxModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Настройки почтового ящика</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal" role="form">
-                    <div class="form-group">
-                        <label for="name" class="col-lg-2 control-label">Название:</label>
-
-                        <div class="col-lg-10">
-                            <input type="text" class="form-control" id="name" placeholder="Название" value="Inbox 1">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Логин:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">username-23424</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Пароль:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">Rf124sadO21As</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Хост:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">mailflow.org</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Порт:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">1313</p>
                         </div>
                     </div>
                 </form>

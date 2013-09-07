@@ -44,6 +44,21 @@ class User(db.Model, UserMixin, GeneralMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def __repr__(self):
+        return '<User %r>' % (self.email)
+
 
 class Inbox(db.Model, GeneralMixin):
     id = db.Column(db.Integer, primary_key=True)

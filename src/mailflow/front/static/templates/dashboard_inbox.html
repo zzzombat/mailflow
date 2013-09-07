@@ -1,0 +1,103 @@
+<div class="panel-container">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><strong>Письма</strong> / {{inbox.name}}
+            <span class="pull-right">
+                <a data-toggle="modal" href="#inboxModal">
+                    <span class="glyphicon glyphicon-wrench"></span>
+                </a>
+            </span>
+        </div>
+
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>От</th>
+                <th>Кому</th>
+                <th>Тема</th>
+                <th>Время</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="email in messages">
+                <td>{{email.id}}</td>
+                <td>{{email.from}}</td>
+                <td>{{email.to}}</td>
+                <td>{{email.subject}}</td>
+                <td>{{email.date | date:'MM/dd/yyyy h:mm'}}</td>
+                <td><a href="#"><span class="glyphicon glyphicon-eye-open"></span></a></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Текст письма</div>
+    <div class="panel-body">
+        Письмо
+    </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="inboxModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Настройки почтового ящика</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="name" class="col-lg-2 control-label">Название:</label>
+
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" id="name" placeholder="Название" value="Inbox 1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Логин:</label>
+
+                        <div class="col-lg-10">
+                            <p class="form-control-static">{{inbox.login}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Пароль:</label>
+
+                        <div class="col-lg-10">
+                            <p class="form-control-static">{{inbox.password}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Хост:</label>
+
+                        <div class="col-lg-10">
+                            <p class="form-control-static">mailflow.org</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Порт:</label>
+
+                        <div class="col-lg-10">
+                            <p class="form-control-static">1313</p>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
