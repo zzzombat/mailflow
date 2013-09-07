@@ -7,9 +7,8 @@
 {% block content %}
 
 <div class="container">
-{% if not user.is_anonymous() %}
-    <p>{{ user.email }}</p>
-    <a href="/logout">Выйти</a>
+{% if not g.user.is_anonymous() %}
+    <h1>Вы уже зарегестрированы: {{ g.user.email }}</h1>
 {% else %}
     <form class="form-signin" method="post" name="login">
         {{form.hidden_tag()}}

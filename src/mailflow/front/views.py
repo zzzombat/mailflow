@@ -10,20 +10,18 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 @app.route('/index', methods = ['GET', 'POST'])
 @app.route('/login', methods = ['GET', 'POST'])
 def index():
-    user = g.user
     form = LoginForm()
     if form.validate_on_submit():
         user = models.User.query.filter_by(email = form.email.data).first()
         session['remember_me'] = form.remember_me.data
         login_user(user, remember = session['remember_me'])
         return redirect('/dashboard')
-    return render_template('index.html', form = form, user=user)
+    return render_template('index.html', form = form)
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    user = g.user
-    return render_template('dashboard.html', user=user)
+    return render_template('dashboard.html')
 
 
 @app.route('/reg', methods = ['GET', 'POST'])
