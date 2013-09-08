@@ -33,13 +33,16 @@ function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inb
     };
 
     $scope.watchMessages = function() {
-        $scope.watcher = $timeout(function(){
+        $scope.messageWatcher = $timeout(function(){
             $scope.getMessages($scope.watchMessages);
-        }, 10000);
+        }, 5000);
     };
 
     $scope.getMessages();
     $scope.watchMessages();
+    $scope.$on('$destroy', function(){
+        $timeout.cancel($scope.messageWatcher);
+    });
 }
 
 function MessageInfoCtrl($scope, $routeParams, Message, Inbox) {

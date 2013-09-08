@@ -1,4 +1,3 @@
-
 """
 
 Simple.
@@ -14,12 +13,14 @@ from mailflow.front import models
 
 logger = logging.getLogger(__name__)
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('user')
     parser.add_argument('recipient')
     parser.add_argument('sender')
     return parser.parse_args()
+
 
 def parse_message(inbox_id, mail_from, rcpt_to, raw_message):
     parsed_message = pyzmail.PyzMessage.factory(raw_message)
@@ -43,11 +44,12 @@ def parse_message(inbox_id, mail_from, rcpt_to, raw_message):
     models.db.session.commit()
     return message
 
+
 def main():
     logging.basicConfig(level=logging.INFO, filename='/tmp/debug-deliver.log')
     args = get_args()
-    
-    inbox = models.Inbox.query.filter(models.Inbox.login==args.user).first()
+
+    inbox = models.Inbox.query.filter(models.Inbox.login == args.user).first()
 
     logger.info("new message by user '%s' from '%s' to '%s'", args.user, args.sender, args.recipient)
     try:
@@ -57,3 +59,6 @@ def main():
         logger.exception('error occured during message parsing')
         print >> sys.stderr, "Internal error"
         return 1
+
+if __name__ == '__main__':
+    main()
