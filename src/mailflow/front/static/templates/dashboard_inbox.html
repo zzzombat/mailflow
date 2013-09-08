@@ -53,7 +53,7 @@
                         <label for="name" class="col-lg-2 control-label">Название:</label>
 
                         <div class="col-lg-10">
-                            <input type="text" class="form-control" id="name" placeholder="Название" value="Inbox 1">
+                            <input type="text" class="form-control" id="name" placeholder="Название" value="{{inbox.name}}">
                         </div>
                     </div>
                     <div class="form-group">
@@ -74,14 +74,14 @@
                         <label class="col-lg-2 control-label">Хост:</label>
 
                         <div class="col-lg-10">
-                            <p class="form-control-static">mailflow.org</p>
+                            <p class="form-control-static">{{inbox.host}}</p>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">Порт:</label>
 
                         <div class="col-lg-10">
-                            <p class="form-control-static">2525</p>
+                            <p class="form-control-static">{{inbox.port}}</p>
                         </div>
                     </div>
                 </form>

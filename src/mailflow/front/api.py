@@ -1,5 +1,6 @@
 from flask import request
 from flask.ext import restful
+from mailflow import settings
 from mailflow.front import models
 from sqlalchemy.exc import IntegrityError
 from flask import g
@@ -116,10 +117,14 @@ class Inbox(restful.Resource):
             return None, 404
         if inbox.user_id != g.user.id:
             return None, 403
-        return {'id': inbox.id,
-                'name': inbox.name,
-                'login': inbox.login,
-                'password': inbox.password}
+        return {
+            'id': inbox.id,
+            'name': inbox.name,
+            'login': inbox.login,
+            'password': inbox.password,
+            'host': settings.INBOX_HOST,
+            'port': settings.INBOX_PORT
+        }
 
     @api_login_required
     def delete(self, inbox_id):
