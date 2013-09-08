@@ -11,7 +11,7 @@ angular.module('inboxServices', ['ngResource'])
             get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'}
         });
     }).factory('Message', function($resource){
-        return $resource('/api/message/:messageId', {})
+        return $resource('/api/message/:messageId', {});
     }).factory('Inboxes', function($resource){
         return $resource('/api/inbox', {},  {
             get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'},
@@ -20,5 +20,5 @@ angular.module('inboxServices', ['ngResource'])
     }).factory('Inbox', function($resource){
         return $resource('/api/inbox/:inboxId', {}, {
             get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'}
-        })
+        });
     });
