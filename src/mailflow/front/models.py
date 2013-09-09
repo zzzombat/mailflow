@@ -104,5 +104,20 @@ class Message(db.Model, GeneralMixin):
     source = db.Column(db.Text())
     inbox = relationship("Inbox", cascade="all")
 
+    @classmethod
+    def get_page_for_inbox_id(cls, inbox_id, page=1):
+        limit = page * settings.INBOX_PAGE_SIZE
+        offset = (page - 1) * settings.INBOX_PAGE_SIZE
+
+        return cls.query \
+                  .filter_by(inbox_id=inbox_id) \
+                  .order_by(cls.creation_date.desc()) \
+                  .slice(offset, limit) \
+                  .all()
+
+    @classmethod
+    def count_for_inbox_id(cls, inbox_id):
+        return cls.query.filter_by(inbox_id=inbox_id).count()
+
     def get_source_file(self, mode='ab+'):
         return storage.fs.open(self.source, mode)

@@ -1,7 +1,7 @@
 <div class="panel-container">
     <div class="panel panel-default">
         <!-- Default panel contents -->
-        <div class="panel-heading"><strong>Письма</strong> / {{inbox.name}}
+        <div class="panel-heading"><strong>Письма (Всего: {{messages.total_items}})</strong> / {{inbox.name}}
             <span class="pull-right">
                 <a data-toggle="modal" href="#inboxModal">
                     <span class="glyphicon glyphicon-wrench"></span>
@@ -12,29 +12,37 @@
             </span>
         </div>
 
-        <table class="table table-condensed">
+        <div class="panel-body">
+          <table class="table table-condensed">
             <thead>
-            <tr>
+              <tr>
                 <th>#</th>
                 <th>От</th>
                 <th>Кому</th>
                 <th>Тема</th>
                 <th>Время</th>
                 <th></th>
-            </tr>
+              </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="message in messages.data">
+              <tr ng-repeat="message in messages.data">
                 <td>{{message.id}}</td>
                 <td>{{message.from_addr}}</td>
                 <td>{{message.to_addr}}</td>
                 <td>{{message.subject}}</td>
                 <td>{{message.creation_date | date:'dd-MM-y H:mm'}}</td>
                 <td><a href="#/{{inbox.id}}/message/{{message.id}}"><span class="glyphicon glyphicon-eye-open"></span></a></td>
-            </tr>
+              </tr>
             </tbody>
-        </table>
-
+          </table>
+        </div>
+        <div class="panel-footer">
+          <ul class="pagination">
+            <li ng-repeat="page in [] | range:messages.total_pages" ng-class="{disabled: page==messages.page_number}">
+              <a href="#/{{inbox.id}}?page={{page}}">{{page}}</a>
+            </li>
+          </ul>
+        </div>
     </div>
 </div>
 

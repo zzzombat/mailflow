@@ -1,4 +1,4 @@
-angular.module('dashboard', ['inboxServices']).
+angular.module('dashboard', ['inboxServices', 'dashboard.filters']).
     config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
             when('/:inboxId', {templateUrl: '/static/templates/dashboard_inbox.html', controller: DashboardInboxCtrl}).

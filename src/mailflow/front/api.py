@@ -1,3 +1,5 @@
+import math
+
 from flask import request
 from flask.ext import restful
 from mailflow import settings
@@ -5,6 +7,8 @@ from mailflow.front import models
 from sqlalchemy.exc import IntegrityError
 from flask import g
 from functools import wraps
+
+from forms import MessageListForm
 
 
 def api_login_required(funk):
@@ -19,12 +23,16 @@ def api_login_required(funk):
 class MessageList(restful.Resource):
     @api_login_required
     def get(self):
-        inbox_id = int(request.args.get('inbox_id', 0))
-        if not inbox_id:
+        form = MessageListForm(request.args)
+        if not form.validate():
             return {
                 'status': 400,
-                'message': "Parameter inbox_id is required"
+                'message': "Invalid request parameters",
+                'errors': form.errors
             }, 400
+
+        inbox_id = form.inbox_id.data
+        page = form.page.data
 
         inbox = models.Inbox.query.get(inbox_id)
 
@@ -40,23 +48,34 @@ class MessageList(restful.Resource):
                 'message': "You are not allowed to access mailbox with id id={0}".format(inbox_id),
             }, 403
 
-        messages = models.Message.query \
-                                 .filter_by(inbox_id=inbox_id) \
-                                 .order_by(models.Message.creation_date.desc())
+        total_items = models.Message.count_for_inbox_id(inbox_id)
 
-        data = [
-            dict(
-                id=m.id,
-                from_addr=m.from_addr,
-                to_addr=m.to_addr,
-                subject=m.subject,
-                creation_date=m.creation_date.strftime('%s%f')[:-3]
-            )
-            for m in messages.all()
-        ]
+        if total_items <= (page - 1) * settings.INBOX_PAGE_SIZE:
+            return {
+                'status': 404,
+                'message': 'Page {0} not found'.format(page)
+            }, 404
+
+        messages = models.Message.get_page_for_inbox_id(
+            form.inbox_id.data,
+            form.page.data
+        )
+
         return {
-            'count': len(messages.all()),
-            'data': data
+            'count': len(messages),
+            'total_items': total_items,
+            'page_number': page,
+            'total_pages': math.ceil(float(total_items) / float(settings.INBOX_PAGE_SIZE)),
+            'data': [
+                dict(
+                    id=m.id,
+                    from_addr=m.from_addr,
+                    to_addr=m.to_addr,
+                    subject=m.subject,
+                    creation_date=m.creation_date.strftime('%s%f')[:-3]
+                )
+                for m in messages
+            ]
         }
 
 

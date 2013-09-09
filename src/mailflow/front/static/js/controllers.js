@@ -23,8 +23,10 @@ function DashboardInboxesCtrl($scope, Inboxes, Inbox) {
 function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inbox) {
     $scope.inbox = Inbox.get({inboxId: $routeParams.inboxId});
 
+    var page = $routeParams.page || 1;
+
     $scope.getMessages = function(callback) {
-        $scope.messages = Messages.get({inbox_id: $routeParams.inboxId}, callback);
+        return Messages.get({inbox_id: $routeParams.inboxId, page: page}, callback);
     };
 
     $scope.truncateInbox = function() {
@@ -32,14 +34,17 @@ function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inb
             .success($scope.getMessages);
     };
 
-    $scope.watchMessages = function() {
+    $scope.watchMessages = function(delay) {
         $scope.messageWatcher = $timeout(function(){
-            $scope.getMessages($scope.watchMessages);
-        }, 5000);
+            $scope.getMessages(function(messages){
+                $scope.messages = messages;
+                $scope.watchMessages(delay);
+            });
+        }, delay);
     };
 
-    $scope.getMessages();
-    $scope.watchMessages();
+    $scope.messages = $scope.getMessages();
+    $scope.watchMessages(5000);
     $scope.$on('$destroy', function(){
         $timeout.cancel($scope.messageWatcher);
     });

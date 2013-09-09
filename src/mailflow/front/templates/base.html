@@ -8,7 +8,7 @@
     <meta name="author" content="">
 
     <!-- Bootstrap core CSS -->
-    <link href="../static/styles/lib/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/styles/lib/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles -->
     {% block css %}{% endblock %}
@@ -26,7 +26,7 @@
             <a href="/reg"><button type="button" class="btn btn-success">Зарегистрироваться</button></a>
             <a href="/index"><button type="button" class="btn btn-primary">Войти</button></a>
           </div>
-        </div><!--/.navbar-collapse -->      
+        </div><!--/.navbar-collapse -->
 {% else %}
       <div class="navbar-header">
           <div class="navbar-brand" href="#">{{g.user.email}}</div>
@@ -34,9 +34,9 @@
 
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-            <li class="active"><a href="/dashboard">Dashboard</a></li>            
-          </ul>        
-          <div class="navbar-form navbar-right">            
+            <li class="active"><a href="/dashboard">Dashboard</a></li>
+          </ul>
+          <div class="navbar-form navbar-right">
             <a href="/logout"><button type="button" class="btn btn-primary">Выйти</button></a>
           </div>
         </div><!--/.navbar-collapse -->
