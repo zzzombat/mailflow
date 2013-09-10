@@ -6,23 +6,39 @@
  * To change this template use File | Settings | File Templates.
  */
 
-function DashboardInboxesCtrl($scope, $location, Inboxes, Inbox) {
-    $scope.inboxes = Inboxes.get(function(inboxes) {
+function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
+    $scope.goToFirst = function(inboxes) {
         if(inboxes.data.length > 0){
             $location.path('/' + inboxes.data[0].id);
         };
-    });
+    };
 
     $scope.addInbox = function() {
         Inboxes.post(this.inbox, function() {
             $scope.inboxes = Inboxes.get();
+            $scope.inbox = {name: ''}
         });
     };
+
     $scope.deleteInbox = function(id) {
         Inbox.delete({inboxId: id}, function() {
-            $scope.inboxes = Inboxes.get();
+            $scope.inboxes = Inboxes.get(function(inboxes) {
+                if ($routeParams.inboxId == id) {
+                    $scope.goToFirst($scope.inboxes)
+                };
+            });
         });
     };
+
+    $scope.inboxes = Inboxes.get(function(inboxes) {
+        if (!$routeParams.inboxId) {
+            $scope.goToFirst(inboxes);
+        };
+    });
+
+    $scope.$on('$routeChangeSuccess', function() {
+        $scope.currentInboxId = $routeParams.inboxId;
+    });
 };
 
 function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inbox) {

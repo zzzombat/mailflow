@@ -3,11 +3,13 @@
         <!-- Default panel contents -->
         <div class="panel-heading"><strong>Письма (Всего: {{messages.total_items}})</strong> / {{inbox.name}}
             <span class="pull-right">
-                <a data-toggle="modal" href="#inboxModal">
+                <a data-toggle="modal" class="btn btn-primary btn-xs" href="#inboxModal">
                     <span class="glyphicon glyphicon-wrench"></span>
+                    Настройки
                 </a>
-                <a ng-click="truncateInbox()">
+                <a class="btn btn-warning btn-xs" ng-click="truncateInbox()">
                     <span class="glyphicon glyphicon-trash"></span>
+                    Очистить
                 </a>
             </span>
         </div>

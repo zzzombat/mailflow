@@ -5,7 +5,7 @@ INBOX_LOGIN_LENGTH = 16
 INBOX_PASSWORD_LENGTH = 16
 INBOX_PAGE_SIZE = 50
 
-INBOX_HOST = 'mailfow.openpz.org'
+INBOX_HOST = 'mailflow.openpz.org'
 INBOX_PORT = 25
 
 RAW_EMAIL_FOLDER = "/var/tmp"
