@@ -1,18 +1,18 @@
-<div class="list-group" ng-controller="DashboardInboxesCtrl">
+<div class="list-group" data-ng-controller="DashboardInboxesCtrl">
   <div class="list-group">
-    <a href="#/{{inbox.id}}" class="list-group-item" ng-repeat="inbox in inboxes.data" ng-class="{active: inbox.id==currentInboxId}">
+    <a href="#/{{inbox.id}}" class="list-group-item" data-ng-repeat="inbox in inboxes.data" data-ng-class="{active: inbox.id==currentInboxId}">
       <span class="glyphicon glyphicon-envelope"></span> {{inbox.name}}
       <span class="badge pull-right">{{inbox.count}}</span>
-      <button type="button" class="pull-right btn btn-danger btn-xs" ng-repeat-end>
-        <span class="glyphicon glyphicon-remove" ng-click="deleteInbox(inbox.id)"></span>
+      <button type="button" class="pull-right btn btn-danger btn-xs">
+        <span class="glyphicon glyphicon-remove" data-ng-click="deleteInbox(inbox.id)"></span>
       </button>
     </a>
     <div class="list-group-item">
-      <form ng-submit="addInbox()">
+      <form data-ng-submit="addInbox()">
         <div class="input-group">
-          <input type="text" ng-model="inbox.name" class="form-control"/>
+          <input type="text" data-ng-model="inbox.name" class="form-control"/>
           <span class="input-group-btn">
-            <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
+            <button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
           </span>
         </div>
       </form>

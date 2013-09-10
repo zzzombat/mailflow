@@ -7,7 +7,7 @@
                     <span class="glyphicon glyphicon-wrench"></span>
                     Настройки
                 </a>
-                <a class="btn btn-warning btn-xs" ng-click="truncateInbox()">
+                <a class="btn btn-warning btn-xs" data-ng-click="truncateInbox()">
                     <span class="glyphicon glyphicon-trash"></span>
                     Очистить
                 </a>
@@ -27,7 +27,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="message in messages.data">
+              <tr data-ng-repeat="message in messages.data">
                 <td>{{message.id}}</td>
                 <td>{{message.from_addr}}</td>
                 <td>{{message.to_addr}}</td>
@@ -40,7 +40,7 @@
         </div>
         <div class="panel-footer">
           <ul class="pagination">
-            <li ng-repeat="page in [] | range:messages.total_pages" ng-class="{disabled: page==messages.page_number}">
+            <li data-ng-repeat="page in [] | range:messages.total_pages" data-ng-class="{disabled: page==messages.page_number}">
               <a href="#/{{inbox.id}}?page={{page}}">{{page}}</a>
             </li>
           </ul>

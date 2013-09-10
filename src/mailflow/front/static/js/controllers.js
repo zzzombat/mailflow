@@ -16,7 +16,7 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
     $scope.addInbox = function() {
         Inboxes.post(this.inbox, function() {
             $scope.inboxes = Inboxes.get();
-            $scope.inbox = {name: ''}
+            $scope.inbox = {name: ''};
         });
     };
 
@@ -24,7 +24,7 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
         Inbox.delete({inboxId: id}, function() {
             $scope.inboxes = Inboxes.get(function(inboxes) {
                 if ($routeParams.inboxId == id) {
-                    $scope.goToFirst($scope.inboxes)
+                    $scope.goToFirst($scope.inboxes);
                 };
             });
         });
