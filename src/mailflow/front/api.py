@@ -15,9 +15,13 @@ def api_login_required(funk):
     @wraps(funk)
     def wrap(*args, **kwargs):
         if g.user.is_anonymous():
-            return None, 401
+            return error(401, "Anonyous users are not allowed to access the dashboard")
         return funk(*args, **kwargs)
     return wrap
+
+
+def error(code, message, **kwargs):
+    return dict(status=code, message=message, **kwargs), code
 
 
 class MessageList(restful.Resource):
@@ -25,11 +29,7 @@ class MessageList(restful.Resource):
     def get(self):
         form = MessageListForm(request.args)
         if not form.validate():
-            return {
-                'status': 400,
-                'message': "Invalid request parameters",
-                'errors': form.errors
-            }, 400
+            return error(400, "Invalid request parameters", errors=form.errors)
 
         inbox_id = form.inbox_id.data
         page = form.page.data
@@ -37,29 +37,17 @@ class MessageList(restful.Resource):
         inbox = models.Inbox.query.get(inbox_id)
 
         if inbox is None:
-            return {
-                'status': 404,
-                'message': "Inbox with id={0} not found".format(inbox_id),
-            }, 404
+            return error(404, "Inbox with id={0} not found".format(inbox_id))
 
         if inbox.user_id != g.user.id:
-            return {
-                'status': 403,
-                'message': "You are not allowed to access mailbox with id id={0}".format(inbox_id),
-            }, 403
+            return error(403, "You are not allowed to access mailbox with id id={0}".format(inbox_id))
 
         total_items = models.Message.count_for_inbox_id(inbox_id)
 
-        if total_items <= (page - 1) * settings.INBOX_PAGE_SIZE:
-            return {
-                'status': 404,
-                'message': 'Page {0} not found'.format(page)
-            }, 404
+        if 0 < total_items <= (page - 1) * settings.INBOX_PAGE_SIZE:
+            return error(404, 'Page {0} not found'.format(page))
 
-        messages = models.Message.get_page_for_inbox_id(
-            form.inbox_id.data,
-            form.page.data
-        )
+        messages = models.Message.get_page_for_inbox_id(inbox_id, page)
 
         return {
             'count': len(messages),
@@ -84,20 +72,22 @@ class Message(restful.Resource):
     def get(self, message_id):
         message = models.Message.query.get(message_id)
         if not message:
-            return None, 404
-        return {'id': message.id,
-                'from_addr': message.from_addr,
-                'to_addr': message.to_addr,
-                'subject': message.subject,
-                'body_plain': message.body_plain,
-                'body_html': message.body_html,
-                }
+            return error(404, "Message with id={0} not found".format(message_id))
+
+        return {
+            'id': message.id,
+            'from_addr': message.from_addr,
+            'to_addr': message.to_addr,
+            'subject': message.subject,
+            'body_plain': message.body_plain,
+            'body_html': message.body_html,
+        }
 
     @api_login_required
     def delete(self, message_id):
         message = models.Message.query.get(message_id)
         if not message:
-            return None, 404
+            return error(404, "Message with id={0} not found".format(message_id))
         models.db.session.delete(message)
         models.db.session.commit()
         return None, 204
