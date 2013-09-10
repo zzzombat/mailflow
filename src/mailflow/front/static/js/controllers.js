@@ -6,8 +6,13 @@
  * To change this template use File | Settings | File Templates.
  */
 
-function DashboardInboxesCtrl($scope, Inboxes, Inbox) {
-    $scope.inboxes = Inboxes.get();
+function DashboardInboxesCtrl($scope, $location, Inboxes, Inbox) {
+    $scope.inboxes = Inboxes.get(function(inboxes) {
+        if(inboxes.data.length > 0){
+            $location.path('/' + inboxes.data[0].id);
+        };
+    });
+
     $scope.addInbox = function() {
         Inboxes.post(this.inbox, function() {
             $scope.inboxes = Inboxes.get();
@@ -18,7 +23,7 @@ function DashboardInboxesCtrl($scope, Inboxes, Inbox) {
             $scope.inboxes = Inboxes.get();
         });
     };
-}
+};
 
 function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inbox) {
     $scope.inbox = Inbox.get({inboxId: $routeParams.inboxId});
