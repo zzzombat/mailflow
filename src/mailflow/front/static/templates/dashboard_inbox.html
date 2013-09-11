@@ -70,6 +70,7 @@
                       <li class="active"><a href="#plain" data-toggle="tab">SMTP</a></li>
                       <li><a href="#django" data-toggle="tab">Django</a></li>
                       <li><a href="#ror" data-toggle="tab">Ruby on Rails</a></li>
+                      <li><a href="#zend" data-toggle="tab">Zend Framework</a></li>
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="plain">
@@ -80,6 +81,9 @@
                       </div>
                       <div class="tab-pane" id="ror">
                         <pre>config.action_mailer.delivery_method = :smtp<br />config.action_mailer.smtp_settings = {<br />  :user_name => '{{inbox.login}}',<br />  :password => '{{inbox.password}}',<br />  :address => '{{inbox.host}}',<br />  :port => '{{inbox.port}}',<br />  :authentication => :plain<br />}</pre>
+                      </div>
+                      <div class="tab-pane" id="zend">
+                        <pre>$options = array(<br />  'auth'     => 'plain',<br />  'username' => '{{inbox.login}}',<br />  'password' => '{{inbox.password}}',<br />  'port' => {{inbox.port}}<br />);<br />$mailTransport = new Zend_Mail_Transport_Smtp(<br />  '{{inbox.host}}',<br />  $options<br />);<br />Zend_Mail::setDefaultTransport($mailTransport);</pre>
                       </div>
                     </div>
                 </form>
