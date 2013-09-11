@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from flask import g
 from functools import wraps
 
-from forms import MessageListForm
+from forms import MessageListForm, InboxForm
 
 
 def api_login_required(funk):
@@ -124,8 +124,8 @@ class Inbox(restful.Resource):
     @api_login_required
     def get(self, inbox_id):
         inbox = models.Inbox.query.get(inbox_id)
-        if not inbox:
-            return None, 404
+        if inbox is None:
+            return error(404, 'Inbox with id={0} not found'.format(inbox_id))
         if inbox.user_id != g.user.id:
             return None, 403
         return {
@@ -136,6 +136,23 @@ class Inbox(restful.Resource):
             'host': settings.INBOX_HOST,
             'port': settings.INBOX_PORT
         }
+
+    @api_login_required
+    def put(self, inbox_id):
+        inbox = models.Inbox.query.get(inbox_id)
+        if inbox is None:
+            return error(404, 'Inbox with id={0} not found'.format(inbox_id))
+        if inbox.user_id != g.user.id:
+            return error(403, 'You are not allowed to edit inbox')
+
+        form = InboxForm.from_json(request.json)
+        if not form.validate():
+            return error(400, 'Invalid form data', errors=form.errors)
+
+        inbox.name = form.name.data
+        models.db.session.commit()
+
+        return None, 200
 
     @api_login_required
     def delete(self, inbox_id):

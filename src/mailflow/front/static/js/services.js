@@ -5,6 +5,7 @@
  * Time: 16:53
  * To change this template use File | Settings | File Templates.
  */
+
 angular.module('inboxServices', ['ngResource'])
     .factory('Messages', function ($resource) {
         return $resource('/api/message/', {}, {
@@ -19,6 +20,7 @@ angular.module('inboxServices', ['ngResource'])
         });
     }).factory('Inbox', function($resource){
         return $resource('/api/inbox/:inboxId', {}, {
-            get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'}
+            get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'},
+            put: {method: 'PUT', params: {'inboxId': '@id'}, isArray: false, cache: false, responseType: 'json'}
         });
     });

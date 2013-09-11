@@ -2,8 +2,16 @@
 from flask.ext.wtf import Form
 from wtforms.validators import Required, ValidationError, NumberRange
 from wtforms import fields, Form as BaseForm
+from werkzeug.datastructures import MultiDict
 
 from mailflow.front import db, models
+
+
+class JSONMixin(object):
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(MultiDict(data.items()))
 
 
 class LoginForm(Form):
@@ -31,6 +39,10 @@ class RegistrationForm(Form):
         if db.session.query(models.User).filter_by(email=field.data).count() > 0:
             message = "Пользователь с таким адресом уже существует".decode('utf-8')
             raise ValidationError(message)
+
+
+class InboxForm(Form, JSONMixin):
+    name = fields.TextField(validators=[Required()])
 
 
 class MessageListForm(BaseForm):

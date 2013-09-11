@@ -13,6 +13,10 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
         };
     };
 
+    $scope.getInboxes = function(callback) {
+        $scope.inboxes = Inboxes.get(callback);
+    };
+
     $scope.addInbox = function() {
         Inboxes.post(this.inbox, function() {
             $scope.inboxes = Inboxes.get();
@@ -22,7 +26,7 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
 
     $scope.deleteInbox = function(id) {
         Inbox.delete({inboxId: id}, function() {
-            $scope.inboxes = Inboxes.get(function(inboxes) {
+            $scope.getInboxes(function(inboxes) {
                 if ($routeParams.inboxId == id) {
                     $scope.goToFirst($scope.inboxes);
                 };
@@ -30,7 +34,7 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
         });
     };
 
-    $scope.inboxes = Inboxes.get(function(inboxes) {
+    $scope.getInboxes(function(inboxes) {
         if (!$routeParams.inboxId) {
             $scope.goToFirst(inboxes);
         };
@@ -39,12 +43,22 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
     $scope.$on('$routeChangeSuccess', function() {
         $scope.currentInboxId = $routeParams.inboxId;
     });
+
+    $scope.$on('inboxUpdated', function () {
+        $scope.getInboxes();
+    });
 };
 
-function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inbox) {
-    $scope.inbox = Inbox.get({inboxId: $routeParams.inboxId});
-
+function DashboardInboxCtrl($scope, $rootScope, $http, $routeParams, $timeout, Messages, Inbox) {
     var page = $routeParams.page || 1;
+    $scope.getInbox = function (callback) {
+        return Inbox.get({inboxId: $routeParams.inboxId}, function(data) {
+            $scope.inboxEdit = angular.copy(data);
+            if (callback) {
+                callback(data);
+            }
+        });
+    };
 
     $scope.getMessages = function(callback) {
         return Messages.get({inbox_id: $routeParams.inboxId, page: page}, callback);
@@ -53,6 +67,12 @@ function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inb
     $scope.truncateInbox = function() {
         $http.post('/api/inbox/' + $routeParams.inboxId + '/truncate')
             .success($scope.getMessages);
+    };
+
+    $scope.updateInbox = function() {
+        Inbox.put($scope.inboxEdit, function() {
+            $rootScope.$broadcast('inboxUpdated');
+        });
     };
 
     $scope.watchMessages = function(delay) {
@@ -64,14 +84,21 @@ function DashboardInboxCtrl($scope, $http, $routeParams, $timeout, Messages, Inb
         }, delay);
     };
 
+    $scope.inbox = $scope.getInbox();
     $scope.messages = $scope.getMessages();
     $scope.watchMessages(5000);
+
+    $scope.$on('inboxUpdated', function () {
+        $scope.inbox = $scope.getInbox();
+    });
     $scope.$on('$destroy', function(){
         $timeout.cancel($scope.messageWatcher);
     });
 }
 
-function MessageInfoCtrl($scope, $routeParams, Message, Inbox) {
+function MessageInfoCtrl($scope, $routeParams, $sce, Message, Inbox) {
     $scope.inbox = Inbox.get({inboxId: $routeParams.inboxId});
-    $scope.message = Message.get({messageId: $routeParams.messageId});
+    $scope.message = Message.get({messageId: $routeParams.messageId}, function (message) {
+        message.body_html = $sce.trustAsHtml(message.body_html);
+    });
 }

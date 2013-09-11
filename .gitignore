@@ -66,3 +66,4 @@ flask
 virtualenv.py
 env
 distribute-0.6.10.tar.gz
+.DS_Store

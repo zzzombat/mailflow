@@ -3,6 +3,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext import restful
 from flask.ext.login import LoginManager
+from flask_wtf.csrf import CsrfProtect
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object('mailflow.settings')
@@ -11,6 +12,8 @@ restful_api = restful.Api(app)
 
 lm = LoginManager()
 lm.init_app(app)
+
+CsrfProtect(app)
 
 import views, models, admin, api
 
@@ -22,6 +25,7 @@ restful_api.add_resource(api.InboxList, '/api/inbox')
 restful_api.add_resource(api.Inbox, '/api/inbox/<int:inbox_id>')
 restful_api.add_resource(api.InboxCleaner, '/api/inbox/<int:inbox_id>/truncate')
 
+
 def initdb():
     db.create_all()
     user_datastore.create_role(name='admin', description='')
@@ -31,5 +35,6 @@ def initdb():
     user_datastore.add_role_to_user(user, admin_role)
     db.session.commit()
 
+
 def main():
-    app.run(debug = True)
+    app.run(debug=True)

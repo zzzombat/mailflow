@@ -3,14 +3,14 @@
         <!-- Default panel contents -->
         <div class="panel-heading"><strong>Письма (Всего: {{messages.total_items}})</strong> / {{inbox.name}}
             <span class="pull-right">
-                <a data-toggle="modal" class="btn btn-primary btn-xs" href="#inboxModal">
+                <button type="button" data-toggle="modal" class="btn btn-primary btn-xs" data-target="#inboxModal">
                     <span class="glyphicon glyphicon-wrench"></span>
                     Настройки
-                </a>
-                <a class="btn btn-warning btn-xs" data-ng-click="truncateInbox()">
+                </button>
+                <button type="button" class="btn btn-warning btn-xs" data-ng-click="truncateInbox()">
                     <span class="glyphicon glyphicon-trash"></span>
                     Очистить
-                </a>
+                </button>
             </span>
         </div>
 
@@ -63,14 +63,14 @@
                         <label for="name" class="col-lg-2 control-label">Название:</label>
 
                         <div class="col-lg-10">
-                            <input type="text" class="form-control" id="name" placeholder="Название" value="{{inbox.name}}">
+                            <input type="text" class="form-control" id="name" placeholder="Название" data-ng-model="inboxEdit.name">
                         </div>
                     </div>
                     <ul class="nav nav-tabs">
-                      <li class="active"><a href="#plain" data-toggle="tab">SMTP</a></li>
-                      <li><a href="#django" data-toggle="tab">Django</a></li>
-                      <li><a href="#ror" data-toggle="tab">Ruby on Rails</a></li>
-                      <li><a href="#zend" data-toggle="tab">Zend Framework</a></li>
+                      <li class="active"><a href="" data-target="#plain" data-toggle="tab">SMTP</a></li>
+                      <li><a href="" data-target="#django" data-toggle="tab">Django</a></li>
+                      <li><a href="" data-target="#ror" data-toggle="tab">Ruby on Rails</a></li>
+                      <li><a href="" data-target="#zend" data-toggle="tab">Zend Framework</a></li>
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="plain">
@@ -90,7 +90,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-primary" data-ng-click="updateInbox()" data-dismiss="modal">Сохранить</button>
             </div>
         </div>
         <!-- /.modal-content -->
