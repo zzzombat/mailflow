@@ -66,36 +66,23 @@
                             <input type="text" class="form-control" id="name" placeholder="Название" value="{{inbox.name}}">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Логин:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">{{inbox.login}}</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Пароль:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">{{inbox.password}}</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Хост:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">{{inbox.host}}</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Порт:</label>
-
-                        <div class="col-lg-10">
-                            <p class="form-control-static">{{inbox.port}}</p>
-                        </div>
+                    <ul class="nav nav-tabs">
+                      <li class="active"><a href="#plain" data-toggle="tab">SMTP</a></li>
+                      <li><a href="#django" data-toggle="tab">Django</a></li>
+                      <li><a href="#ror" data-toggle="tab">Ruby on Rails</a></li>
+                    </ul>
+                    <div class="tab-content">
+                      <div class="tab-pane active" id="plain">
+                          <pre>Host: {{inbox.host}}<br />Port: {{inbox.port}}<br />Username: {{inbox.login}}<br />Password: {{inbox.password}}</pre>
+                      </div>
+                      <div class="tab-pane" id="django">
+                        <pre>EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'<br />EMAIL_HOST = '{{inbox.host}}'<br />EMAIL_PORT = {{inbox.port}}<br />EMAIL_HOST_USER = '{{inbox.login}}'<br />EMAIL_HOST_PASSWORD = '{{inbox.password}}'<br />EMAIL_USE_TLS = False</pre>
+                      </div>
+                      <div class="tab-pane" id="ror">
+                        <pre>config.action_mailer.delivery_method = :smtp<br />config.action_mailer.smtp_settings = {<br />  :user_name => '{{inbox.login}}',<br />  :password => '{{inbox.password}}',<br />  :address => '{{inbox.host}}',<br />  :port => '{{inbox.port}}',<br />  :authentication => :plain<br />}</pre>
+                      </div>
                     </div>
                 </form>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
