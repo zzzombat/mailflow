@@ -15,7 +15,7 @@
         </div>
 
         <div class="panel-body">
-          <table class="table table-condensed">
+          <table class="table table-condensed table-striped">
             <thead>
               <tr>
                 <th>#</th>
@@ -32,7 +32,7 @@
                 <td>{{message.from_addr}}</td>
                 <td>{{message.to_addr}}</td>
                 <td>{{message.subject}}</td>
-                <td>{{message.creation_date | date:'dd-MM-y H:mm'}}</td>
+                <td>{{message.creation_date | date:'dd-MM-y H:mm'}}</
                 <td><a href="#/{{inbox.id}}/message/{{message.id}}"><span class="glyphicon glyphicon-eye-open"></span></a></td>
               </tr>
             </tbody>
