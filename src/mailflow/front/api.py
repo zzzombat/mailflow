@@ -96,12 +96,10 @@ class Message(restful.Resource):
 class InboxList(restful.Resource):
     @api_login_required
     def get(self):
-        inboxes = models.Inbox.query \
-                              .filter_by(user_id=g.user.id) \
-                              .order_by(models.Inbox.id)
+        inboxes = models.Inbox.get_for_user_id(g.user.id)
         result = {
-            'count': len(inboxes.all()),
-            'data': [dict(id=i.id, name=i.name) for i in inboxes.all()]
+            'count': len(inboxes),
+            'data': [dict(id=i.id, name=i.name) for i in inboxes]
         }
         return result
 

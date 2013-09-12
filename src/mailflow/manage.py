@@ -5,7 +5,7 @@ from mailflow.commands import initdb, deliver
 
 manager = Manager(app)
 
-manager.add_command('runserver', Server())
+manager.add_command('runserver', Server(debug=True))
 manager.add_command('initdb', initdb.InitDB())
 manager.add_command('deliver', deliver.Deliver())
 

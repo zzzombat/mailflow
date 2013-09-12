@@ -76,6 +76,14 @@ class Inbox(db.Model, GeneralMixin):
     name = db.Column(db.String(255), index=True)
     user = relationship("User")
 
+    @classmethod
+    @cache.memoize(3600)
+    def get_for_user_id(cls, user_id):
+        return cls.query \
+            .filter_by(user_id=user_id) \
+            .order_by(cls.id) \
+            .all()
+
     def __init__(self, name=None):
         self.name = name
         super(Inbox, self).__init__()
@@ -86,6 +94,13 @@ class Inbox(db.Model, GeneralMixin):
 
         if not self.password:
             self.password = _generate_string(settings.INBOX_PASSWORD_LENGTH)
+
+
+def invalidate_inbox_cache(mapper, connect, target):
+    cache.delete_memoized(Inbox.get_for_user_id, Inbox, target.user_id)
+listen(Inbox, 'after_insert', invalidate_inbox_cache)
+listen(Inbox, 'after_update', invalidate_inbox_cache)
+listen(Inbox, 'after_delete', invalidate_inbox_cache)
 
 
 def generate_credentials_listener(mapper, connect, target):
