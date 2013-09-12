@@ -6,7 +6,7 @@ from flask.ext.security import UserMixin, RoleMixin
 from sqlalchemy.event import listen
 from sqlalchemy.orm import relationship
 
-from mailflow.front import db
+from mailflow.front import db, cache
 from mailflow import storage
 from mailflow import settings
 
@@ -105,6 +105,7 @@ class Message(db.Model, GeneralMixin):
     inbox = relationship("Inbox", cascade="all")
 
     @classmethod
+    @cache.memoize(3600)
     def get_page_for_inbox_id(cls, inbox_id, page=1):
         limit = page * settings.INBOX_PAGE_SIZE
         offset = (page - 1) * settings.INBOX_PAGE_SIZE
@@ -116,8 +117,16 @@ class Message(db.Model, GeneralMixin):
                   .all()
 
     @classmethod
+    @cache.memoize(3600)
     def count_for_inbox_id(cls, inbox_id):
         return cls.query.filter_by(inbox_id=inbox_id).count()
 
     def get_source_file(self, mode='ab+'):
         return storage.fs.open(self.source, mode)
+
+
+def invalidate_message_cache(mapper, connect, target):
+    cache.delete_memoized(Message.get_page_for_inbox_id, Message, target.inbox_id)
+    cache.delete_memoized(Message.count_for_inbox_id, Message, target.inbox_id)
+listen(Message, 'after_insert', invalidate_message_cache)
+listen(Message, 'after_delete', invalidate_message_cache)
