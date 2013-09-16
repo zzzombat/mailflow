@@ -7,7 +7,7 @@ import mailflow
 requires = [
     'flask==0.9',
     'flask-security',
-    'sqlalchemy==0.7.9',
+    'sqlalchemy>=0.8',
     'flask-sqlalchemy==0.16',
     'sqlalchemy-migrate',
     'flask-whooshalchemy==0.54a',

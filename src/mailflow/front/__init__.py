@@ -22,7 +22,6 @@ import views, models, admin, api
 
 user_datastore = SQLAlchemyUserDatastore(db, models.User, models.Role)
 security = Security(app, user_datastore)
-restful_api.add_resource(api.MessageList, '/api/message')
 restful_api.add_resource(api.Message, '/api/message/<int:message_id>')
 restful_api.add_resource(api.InboxList, '/api/inbox')
 restful_api.add_resource(api.Inbox, '/api/inbox/<int:inbox_id>')

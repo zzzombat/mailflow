@@ -46,5 +46,4 @@ class InboxForm(Form, JSONMixin):
 
 
 class MessageListForm(BaseForm):
-    inbox_id = fields.IntegerField(validators=[Required(), NumberRange(min=1)])
     page = fields.IntegerField(validators=[NumberRange(min=1)], default=1)

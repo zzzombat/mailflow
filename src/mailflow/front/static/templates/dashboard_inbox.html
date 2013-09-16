@@ -1,7 +1,8 @@
 <div class="panel-container">
+
     <div class="panel panel-default">
         <!-- Default panel contents -->
-        <div class="panel-heading"><strong>Письма (Всего: {{messages.total_items}})</strong> / {{inbox.name}}
+        <div class="panel-heading"><strong>Письма (Всего: {{inbox.total_messages}})</strong> / {{inbox.name}}
             <span class="pull-right">
                 <button type="button" data-toggle="modal" class="btn btn-primary btn-xs" data-target="#inboxModal">
                     <span class="glyphicon glyphicon-wrench"></span>
@@ -10,6 +11,10 @@
                 <button type="button" class="btn btn-warning btn-xs" data-ng-click="truncateInbox()">
                     <span class="glyphicon glyphicon-trash"></span>
                     Очистить
+                </button>
+                <button type="button" class="btn btn-danger btn-xs" data-ng-click="deleteInbox()">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Удалить
                 </button>
             </span>
         </div>
@@ -27,20 +32,24 @@
               </tr>
             </thead>
             <tbody>
-              <tr data-ng-repeat="message in messages.data">
+              <tr data-ng-repeat="message in inbox.messages">
                 <td>{{message.id}}</td>
                 <td>{{message.from_addr}}</td>
                 <td>{{message.to_addr}}</td>
                 <td>{{message.subject}}</td>
-                <td>{{message.creation_date | date:'dd-MM-y H:mm'}}</
-                <td><a href="#/{{inbox.id}}/message/{{message.id}}"><span class="glyphicon glyphicon-eye-open"></span></a></td>
+                <td>{{message.creation_date | date:'dd-MM-y H:mm'}}</td>
+                <td>
+                    <a class="btn btn-default" href="#/{{inbox.id}}/message/{{message.id}}">
+                        <span class="glyphicon glyphicon-eye-open"></span>
+                    </a>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="panel-footer">
           <ul class="pagination">
-            <li data-ng-repeat="page in [] | range:messages.total_pages" data-ng-class="{disabled: page==messages.page_number}">
+            <li data-ng-repeat="page in [] | range:inbox.total_pages" data-ng-class="{disabled: page==inbox.page_number}">
               <a href="#/{{inbox.id}}?page={{page}}">{{page}}</a>
             </li>
           </ul>

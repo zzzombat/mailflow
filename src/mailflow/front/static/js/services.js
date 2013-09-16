@@ -7,11 +7,7 @@
  */
 
 angular.module('inboxServices', ['ngResource'])
-    .factory('Messages', function ($resource) {
-        return $resource('/api/message/', {}, {
-            get: {method: 'GET', params: {}, isArray: false, cache: false, responseType: 'json'}
-        });
-    }).factory('Message', function($resource){
+    .factory('Message', function($resource){
         return $resource('/api/message/:messageId', {});
     }).factory('Inboxes', function($resource){
         return $resource('/api/inbox', {},  {

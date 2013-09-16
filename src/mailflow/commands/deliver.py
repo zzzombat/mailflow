@@ -25,30 +25,31 @@ class Deliver(Command):
 
         logger.info("new message by user '%s' from '%s' to '%s'", user, sender, recipient)
         input = sys.stdin.read()
+
         try:
-            self.parse_message(inbox.id, sender, recipient, input)
+            self.parse_message(inbox, sender, recipient, input)
             return 0
         except Exception, e:
             logger.exception('error occured during message parsing')
             print >> sys.stderr, "Internal error"
             return 1
 
-    def parse_message(self, inbox_id, mail_from, rcpt_to, raw_message):
+    def parse_message(self, inbox, mail_from, rcpt_to, raw_message):
         parsed_message = pyzmail.PyzMessage.factory(raw_message)
         message = models.Message()
         models.db.session.add(message)
 
-        message.inbox_id = inbox_id
+        message.inbox = inbox
         message.from_addr = mail_from
         message.to_addr = rcpt_to
         message.subject = parsed_message.get_subject()
         for part in parsed_message.mailparts:
             if not part.is_body:
                 continue
-                if part.type == 'text/plain':
-                    message.body_plain = part.get_payload()
-                    if part.type == 'text/html':
-                        message.body_html = part.get_payload()
+            if part.type == 'text/plain':
+                message.body_plain = part.get_payload()
+            if part.type == 'text/html':
+                message.body_html = part.get_payload()
 
         message.source = hashlib.sha1(raw_message).hexdigest()
         message.get_source_file().write(raw_message)
