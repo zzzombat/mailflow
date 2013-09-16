@@ -37,7 +37,6 @@ class Deliver(Command):
     def parse_message(self, inbox, mail_from, rcpt_to, raw_message):
         parsed_message = pyzmail.PyzMessage.factory(raw_message)
         message = models.Message()
-        models.db.session.add(message)
 
         message.inbox = inbox
         message.from_addr = mail_from
@@ -52,6 +51,8 @@ class Deliver(Command):
                 message.body_html = part.get_payload()
 
         message.source = hashlib.sha1(raw_message).hexdigest()
-        message.get_source_file().write(raw_message)
+        message.get_source_file('w').write(raw_message)
+
+        models.db.session.add(message)
         models.db.session.commit()
         return message
