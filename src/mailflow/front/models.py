@@ -158,7 +158,7 @@ def invalidate_inbox_cache(mapper, connect, target):
         cache.delete_memoized(target.messages_page, target, page)
     cache.delete_memoized(Inbox.get_for_user_id, Inbox, target.user_id)
     cache.delete_memoized(Inbox.get, Inbox, target.id)
-    listen(Inbox, 'after_insert', invalidate_inbox_cache)
+listen(Inbox, 'after_insert', invalidate_inbox_cache)
 listen(Inbox, 'after_update', invalidate_inbox_cache)
 listen(Inbox, 'after_delete', invalidate_inbox_cache)
 
