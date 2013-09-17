@@ -24,8 +24,10 @@ requires = [
     'flask-restful',
     'blinker==1.2',
     'Flask-Cache',
-    'pylibmc',
-    'Flask-Script'
+    'python-memcached',
+    'gevent',
+    'psycogreen',
+    'Flask-Script',
 ]
 
 setup(
