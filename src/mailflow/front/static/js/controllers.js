@@ -6,15 +6,15 @@
  * To change this template use File | Settings | File Templates.
  */
 
-function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
+function DashboardInboxesCtrl($scope, $rootScope, $routeParams, $location, $timeout, Inboxes, Inbox) {
     $scope.goToFirst = function(inboxes) {
-        if(inboxes.data.length > 0){
+        if (inboxes && inboxes.data.length > 0){
             $location.path('/' + inboxes.data[0].id);
         };
     };
 
     $scope.getInboxes = function(callback) {
-        $scope.inboxes = Inboxes.get(callback);
+        return Inboxes.get(callback);
     };
 
     $scope.addInbox = function() {
@@ -24,17 +24,16 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
         });
     };
 
-    $scope.deleteInbox = function(id) {
-        Inbox.delete({inboxId: id}, function() {
-            $scope.getInboxes(function(inboxes) {
-                if ($routeParams.inboxId == id) {
-                    $scope.goToFirst($scope.inboxes);
-                };
+    $scope.syncInboxes = function(delay) {
+        $scope.inboxesWatcher = $timeout(function(){
+            $scope.getInboxes(function(inboxes){
+                $scope.inboxes = inboxes;
+                $scope.syncInboxes(delay);
             });
-        });
+        }, delay);
     };
 
-    $scope.getInboxes(function(inboxes) {
+    $scope.inboxes = $scope.getInboxes(function(inboxes) {
         if (!$routeParams.inboxId) {
             $scope.goToFirst(inboxes);
         };
@@ -44,55 +43,86 @@ function DashboardInboxesCtrl($scope, $routeParams, $location, Inboxes, Inbox) {
         $scope.currentInboxId = $routeParams.inboxId;
     });
 
-    $scope.$on('inboxUpdated', function () {
-        $scope.getInboxes();
+    $scope.$on('inboxUpdate', function () {
+        $scope.getInboxes(function(inboxes) {
+            $scope.inboxes = inboxes;
+        });
+    });
+
+    $scope.$on('inboxGetError', function () {
+        $scope.goToFirst($scope.inboxes);
+    });
+
+    $scope.$broadcast('inboxUpdate');
+    $scope.syncInboxes(5000);
+    $scope.$watch('inboxes', function(oldValues, newValues) {
+        var oldInbox, newInbox, length;
+        length = Math.max(newValues.count, oldValues.count);
+        for (var i=0; i<length; i++) {
+            if (oldValues.data[i] && oldValues.data[i].id == $scope.currentInboxId) {
+                oldInbox = oldValues.data[i];
+            }
+            if (newValues.data[i] && newValues.data[i].id == $scope.currentInboxId) {
+                newInbox = newValues.data[i];
+            }
+        };
+        if (oldInbox && newInbox && oldInbox.total_messages != newInbox.total_messages) {
+            $rootScope.$broadcast('messagesUpdate');
+        }
+    });
+
+    $scope.$on('$destroy', function(){
+        $timeout.cancel($scope.inboxesWatcher);
     });
 };
 
-function DashboardInboxCtrl($scope, $rootScope, $http, $routeParams, $timeout, Messages, Inbox) {
+function DashboardInboxCtrl($scope, $rootScope, $http, $routeParams, Inbox) {
     var page = $routeParams.page || 1;
+
     $scope.getInbox = function (callback) {
-        return Inbox.get({inboxId: $routeParams.inboxId}, function(data) {
-            $scope.inboxEdit = angular.copy(data);
+        return Inbox.get({inboxId: $routeParams.inboxId, page: page}, function(data) {
             if (callback) {
                 callback(data);
             }
+        }, function(data) {
+            $rootScope.$broadcast('inboxGetError');
         });
     };
 
-    $scope.getMessages = function(callback) {
-        return Messages.get({inbox_id: $routeParams.inboxId, page: page}, callback);
+    $scope.getInboxAndCopy = function() {
+        $scope.inbox = $scope.getInbox(function(data) {
+            $scope.inboxEdit = angular.copy(data);
+        });
     };
 
     $scope.truncateInbox = function() {
         $http.post('/api/inbox/' + $routeParams.inboxId + '/truncate')
-            .success($scope.getMessages);
+            .success(function() {
+                $scope.getInbox(function (data) {
+                    $scope.inbox = data;
+                    $rootScope.$broadcast('inboxUpdate');
+                });
+            });
     };
 
     $scope.updateInbox = function() {
         Inbox.put($scope.inboxEdit, function() {
-            $rootScope.$broadcast('inboxUpdated');
+            $rootScope.$broadcast('inboxUpdate');
         });
     };
 
-    $scope.watchMessages = function(delay) {
-        $scope.messageWatcher = $timeout(function(){
-            $scope.getMessages(function(messages){
-                $scope.messages = messages;
-                $scope.watchMessages(delay);
-            });
-        }, delay);
+    $scope.deleteInbox = function() {
+        Inbox.delete({inboxId: $routeParams.inboxId}, function() {
+            $rootScope.$broadcast('inboxUpdate');
+        });
     };
 
-    $scope.inbox = $scope.getInbox();
-    $scope.messages = $scope.getMessages();
-    $scope.watchMessages(5000);
-
-    $scope.$on('inboxUpdated', function () {
-        $scope.inbox = $scope.getInbox();
-    });
-    $scope.$on('$destroy', function(){
-        $timeout.cancel($scope.messageWatcher);
+    $scope.getInboxAndCopy();
+    $scope.$on('inboxUpdate', $scope.getInboxAndCopy);
+    $scope.$on('messagesUpdate', function () {
+        $scope.getInbox(function (inbox) {
+            $scope.inbox = inbox;
+        });
     });
 }
 

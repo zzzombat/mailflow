@@ -1,5 +1,3 @@
-import math
-
 from flask import request
 from flask.ext import restful
 from mailflow import settings
@@ -22,49 +20,6 @@ def api_login_required(funk):
 
 def error(code, message, **kwargs):
     return dict(status=code, message=message, **kwargs), code
-
-
-class MessageList(restful.Resource):
-    @api_login_required
-    def get(self):
-        form = MessageListForm(request.args)
-        if not form.validate():
-            return error(400, "Invalid request parameters", errors=form.errors)
-
-        inbox_id = form.inbox_id.data
-        page = form.page.data
-
-        inbox = models.Inbox.query.get(inbox_id)
-
-        if inbox is None:
-            return error(404, "Inbox with id={0} not found".format(inbox_id))
-
-        if inbox.user_id != g.user.id:
-            return error(403, "You are not allowed to access mailbox with id id={0}".format(inbox_id))
-
-        total_items = models.Message.count_for_inbox_id(inbox_id)
-
-        if 0 < total_items <= (page - 1) * settings.INBOX_PAGE_SIZE:
-            return error(404, 'Page {0} not found'.format(page))
-
-        messages = models.Message.get_page_for_inbox_id(inbox_id, page)
-
-        return {
-            'count': len(messages),
-            'total_items': total_items,
-            'page_number': page,
-            'total_pages': math.ceil(float(total_items) / float(settings.INBOX_PAGE_SIZE)),
-            'data': [
-                dict(
-                    id=m.id,
-                    from_addr=m.from_addr,
-                    to_addr=m.to_addr,
-                    subject=m.subject,
-                    creation_date=m.creation_date.strftime('%s%f')[:-3]
-                )
-                for m in messages
-            ]
-        }
 
 
 class Message(restful.Resource):
@@ -96,14 +51,18 @@ class Message(restful.Resource):
 class InboxList(restful.Resource):
     @api_login_required
     def get(self):
-        inboxes = models.Inbox.query \
-                              .filter_by(user_id=g.user.id) \
-                              .order_by(models.Inbox.id)
-        result = {
-            'count': len(inboxes.all()),
-            'data': [dict(id=i.id, name=i.name) for i in inboxes.all()]
+        inboxes = models.Inbox.get_for_user_id(g.user.id)
+        return {
+            'count': len(inboxes),
+            'data': [
+                dict(
+                    id=inbox.id,
+                    name=inbox.name,
+                    total_messages=inbox.message_count
+                )
+                for inbox in inboxes
+            ]
         }
-        return result
 
     @api_login_required
     def post(self):
@@ -123,18 +82,44 @@ class InboxList(restful.Resource):
 class Inbox(restful.Resource):
     @api_login_required
     def get(self, inbox_id):
-        inbox = models.Inbox.query.get(inbox_id)
+        inbox = models.Inbox.get(inbox_id)
         if inbox is None:
-            return error(404, 'Inbox with id={0} not found'.format(inbox_id))
+            return error(404, "Inbox with id={0} not found".format(inbox_id))
         if inbox.user_id != g.user.id:
-            return None, 403
+            return error(403, "You are not allowed to access mailbox with id id={0}".format(inbox_id))
+
+        form = MessageListForm(request.args)
+        if not form.validate():
+            return error(400, "Invalid request parameters", errors=form.errors)
+
+        page = form.page.data
+
+        if inbox.message_count > 0 and page > inbox.page_count:
+            return error(404, 'Page {0} not found'.format(page))
+
+        messages = inbox.messages_page(page)
+
         return {
             'id': inbox.id,
             'name': inbox.name,
             'login': inbox.login,
             'password': inbox.password,
             'host': settings.INBOX_HOST,
-            'port': settings.INBOX_PORT
+            'port': settings.INBOX_PORT,
+            'messages_on_page': len(messages),
+            'total_messages': inbox.message_count,
+            'page_number': page,
+            'total_pages': inbox.page_count,
+            'messages': [
+                dict(
+                    id=m.id,
+                    from_addr=m.from_addr,
+                    to_addr=m.to_addr,
+                    subject=m.subject,
+                    creation_date=m.creation_date.strftime('%s%f')[:-3]
+                )
+                for m in messages
+            ]
         }
 
     @api_login_required
@@ -170,10 +155,10 @@ class InboxCleaner(restful.Resource):
     @api_login_required
     def post(self, inbox_id):
         inbox = models.Inbox.query.get(inbox_id)
-        if not inbox:
-            return None, 404
+        if inbox is None:
+            return error(404, 'Inbox with id={0} not found'.format(inbox_id))
         if inbox.user_id != g.user.id:
-            return None, 403
-        models.Message.query.filter_by(inbox_id=inbox_id).delete()
-        models.db.session.commit()
+            return error(403, 'You are not allowed to edit inbox')
+
+        inbox.truncate()
         return None, 200

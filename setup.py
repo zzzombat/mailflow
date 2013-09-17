@@ -7,7 +7,7 @@ import mailflow
 requires = [
     'flask==0.9',
     'flask-security',
-    'sqlalchemy==0.7.9',
+    'sqlalchemy>=0.8',
     'flask-sqlalchemy==0.16',
     'sqlalchemy-migrate',
     'flask-whooshalchemy==0.54a',
@@ -22,7 +22,10 @@ requires = [
     'kombu==2.5.14',
     'librabbitmq==1.0.1',
     'flask-restful',
-    'blinker==1.2'
+    'blinker==1.2',
+    'Flask-Cache',
+    'pylibmc',
+    'Flask-Script'
 ]
 
 setup(
@@ -37,9 +40,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'mailflow-initdb = mailflow.front:initdb',
-            'mailflow-front = mailflow.front:main',
-            'mailflow-deliver = mailflow.deliver:main',
+            'mailflow = mailflow.manage:manager.run',
         ]
     },
 )
