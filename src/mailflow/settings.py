@@ -1,4 +1,4 @@
-SQLALCHEMY_DATABASE_URI = "postgres://@/mailflow"
+SQLALCHEMY_DATABASE_URI = "postgres://mailflow.user:1234@localhost/mailflow"
 SECRET_KEY = 'Chi6riup1gaetiengaShoh=Wey1pohph0ieDaes7eeph'
 
 INBOX_LOGIN_LENGTH = 16
