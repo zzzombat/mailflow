@@ -2,10 +2,7 @@
   <div class="list-group">
     <a href="#/{{inbox.id}}" class="list-group-item" data-ng-repeat="inbox in inboxes.data" data-ng-class="{active: inbox.id==currentInboxId}">
       <span class="glyphicon glyphicon-envelope"></span> {{inbox.name}}
-      <span class="badge pull-right">{{inbox.count}}</span>
-      <button type="button" class="pull-right btn btn-danger btn-xs">
-        <span class="glyphicon glyphicon-remove" data-ng-click="deleteInbox(inbox.id)"></span>
-      </button>
+      <span class="badge pull-right">{{inbox.total_messages}}</span>
     </a>
     <div class="list-group-item">
       <form data-ng-submit="addInbox()">
