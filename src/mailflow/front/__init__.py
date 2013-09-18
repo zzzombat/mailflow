@@ -27,8 +27,7 @@ else:
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object('mailflow.settings')
-if 'MAILFLOW_CONFIG' in os.environ:
-    app.config.from_envvar('MAILFLOW_CONFIG')
+app.config.from_envvar('MAILFLOW_CONFIG', silent=True)
 
 db = SQLAlchemy(app)
 if using_gevent:
