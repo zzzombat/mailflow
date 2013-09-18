@@ -1,0 +1,10 @@
+BIND=unix:/tmp/gunicorn_mailflow.sock
+WORKERS=5
+MAX_REQUESTS=5000
+TIMEOUT=30
+WORKER_CLASS=gevent
+LOG_FILE=/var/log/gunicorn/mailflow.log
+LOG_LEVEL=info
+WORKER_CONNECTIONS=200
+BACKLOG=2048
+KEEP_ALIVE=2

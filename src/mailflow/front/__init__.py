@@ -27,16 +27,16 @@ else:
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object('mailflow.settings')
+if 'MAILFLOW_CONFIG' in os.environ:
+    app.config.from_envvar('MAILFLOW_CONFIG')
+
 db = SQLAlchemy(app)
 if using_gevent:
-
     # Assuming that gevent monkey patched the builtin
     # threading library, we're likely good to use
     # SQLAlchemy's QueuePool, which is the default
     # pool class.  However, we need to make it use
     # threadlocal connections
-    #
-    #
     db.engine.pool._use_threadlocal = True
 restful_api = restful.Api(app)
 
