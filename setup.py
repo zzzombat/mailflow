@@ -5,7 +5,7 @@ sys.path.insert(0, 'src')
 import mailflow
 
 requires = [
-    'flask==0.9',
+    'flask',
     'flask-security',
     'sqlalchemy>=0.8',
     'flask-sqlalchemy==0.16',
