@@ -1,7 +1,6 @@
 from flask import request
 from flask.ext import restful
-from mailflow import settings
-from mailflow.front import models
+from mailflow.front import models, app
 from sqlalchemy.exc import IntegrityError
 from flask import g
 from functools import wraps
@@ -104,8 +103,8 @@ class Inbox(restful.Resource):
             'name': inbox.name,
             'login': inbox.login,
             'password': inbox.password,
-            'host': settings.INBOX_HOST,
-            'port': settings.INBOX_PORT,
+            'host': app.config['INBOX_HOST'],
+            'port': app.config['INBOX_PORT'],
             'messages_on_page': len(messages),
             'total_messages': inbox.message_count,
             'page_number': page,
