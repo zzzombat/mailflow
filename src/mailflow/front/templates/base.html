@@ -21,7 +21,7 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
 
-{% if g.user.is_anonymous() %}
+{% if user.is_anonymous() %}
         <div class="navbar-collapse collapse">
           <div class="navbar-form navbar-right">
             <a href="/reg"><button type="button" class="btn btn-success">Зарегистрироваться</button></a>
@@ -30,7 +30,7 @@
         </div><!--/.navbar-collapse -->
 {% else %}
       <div class="navbar-header">
-          <div class="navbar-brand" href="#">{{g.user.email}}</div>
+          <div class="navbar-brand" href="#">{{user.email}}</div>
         </div>
 
         <div class="navbar-collapse collapse">

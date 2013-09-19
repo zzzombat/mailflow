@@ -2,8 +2,9 @@ from flask import request
 from flask.ext import restful
 from mailflow.front import models, app
 from sqlalchemy.exc import IntegrityError
-from flask import g
 from functools import wraps
+
+from flask.ext.login import current_user
 
 from forms import MessageListForm, InboxForm
 
@@ -11,7 +12,7 @@ from forms import MessageListForm, InboxForm
 def api_login_required(funk):
     @wraps(funk)
     def wrap(*args, **kwargs):
-        if g.user.is_anonymous():
+        if current_user.is_anonymous():
             return error(401, "Anonyous users are not allowed to access the dashboard")
         return funk(*args, **kwargs)
     return wrap
@@ -50,7 +51,7 @@ class Message(restful.Resource):
 class InboxList(restful.Resource):
     @api_login_required
     def get(self):
-        inboxes = models.Inbox.get_for_user_id(g.user.id)
+        inboxes = models.Inbox.get_for_user_id(current_user.id)
         return {
             'count': len(inboxes),
             'data': [
@@ -69,7 +70,7 @@ class InboxList(restful.Resource):
             inbox = models.Inbox(**request.json)
         except Exception:
             return None, 400
-        inbox.user_id = g.user.id
+        inbox.user_id = current_user.id
         models.db.session.add(inbox)
         try:
             models.db.session.commit()
@@ -84,7 +85,7 @@ class Inbox(restful.Resource):
         inbox = models.Inbox.get(inbox_id)
         if inbox is None:
             return error(404, "Inbox with id={0} not found".format(inbox_id))
-        if inbox.user_id != g.user.id:
+        if inbox.user_id != current_user.id:
             return error(403, "You are not allowed to access mailbox with id id={0}".format(inbox_id))
 
         form = MessageListForm(request.args)
@@ -126,7 +127,7 @@ class Inbox(restful.Resource):
         inbox = models.Inbox.query.get(inbox_id)
         if inbox is None:
             return error(404, 'Inbox with id={0} not found'.format(inbox_id))
-        if inbox.user_id != g.user.id:
+        if inbox.user_id != current_user.id:
             return error(403, 'You are not allowed to edit inbox')
 
         form = InboxForm.from_json(request.json)
@@ -143,7 +144,7 @@ class Inbox(restful.Resource):
         inbox = models.Inbox.query.get(inbox_id)
         if not inbox:
             return None, 404
-        if inbox.user_id != g.user.id:
+        if inbox.user_id != current_user.id:
             return None, 403
         models.db.session.delete(inbox)
         models.db.session.commit()
@@ -156,7 +157,7 @@ class InboxCleaner(restful.Resource):
         inbox = models.Inbox.query.get(inbox_id)
         if inbox is None:
             return error(404, 'Inbox with id={0} not found'.format(inbox_id))
-        if inbox.user_id != g.user.id:
+        if inbox.user_id != current_user.id:
             return error(403, 'You are not allowed to edit inbox')
 
         inbox.truncate()
