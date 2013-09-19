@@ -11,7 +11,7 @@ lm.login_view = 'index'
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if current_user.is_authenticated():
-        return redirect('/dashboard')
+        return redirect(url_for('dashboard'))
 
     form = LoginForm()
     if form.validate_on_submit():
