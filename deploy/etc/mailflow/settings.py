@@ -6,6 +6,9 @@ SQLALCHEMY_POOL_TIMEOUT = 30
 SQLALCHEMY_POOL_RECYCLE = 5 * 3600
 SQLALCHEMY_MAX_OVERFLOW = 20
 
+LOG_LEVEL = 'INFO'
+LOG_FILE = '/var/log/mailflow/webapp.log'
+
 SECRET_KEY = 'Chi6riup1gaetiengaShoh=Wey1pohph0ieDaes7eeph'
 
 INBOX_LOGIN_LENGTH = 16

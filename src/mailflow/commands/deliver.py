@@ -1,13 +1,10 @@
 import sys
-import logging
 import hashlib
 import pyzmail
 
 from flask.ext.script import Command, Option
 
-from mailflow.front import models
-
-logger = logging.getLogger(__name__)
+from mailflow.front import models, app
 
 
 class Deliver(Command):
@@ -19,18 +16,16 @@ class Deliver(Command):
     ]
 
     def run(self, user, recipient, sender):
-        logging.basicConfig(level=logging.INFO, filename='/tmp/debug-deliver.log')
-
         inbox = models.Inbox.query.filter(models.Inbox.login == user).first()
 
-        logger.info("new message by user '%s' from '%s' to '%s'", user, sender, recipient)
+        app.logger.info("new message by user '%s' from '%s' to '%s'", user, sender, recipient)
         input = sys.stdin.read()
 
         try:
             self.parse_message(inbox, sender, recipient, input)
             return 0
-        except Exception, e:
-            logger.exception('error occured during message parsing')
+        except Exception:
+            app.logger.exception('error occured during message parsing')
             print >> sys.stderr, "Internal error"
             return 1
 

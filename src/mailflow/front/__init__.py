@@ -1,5 +1,8 @@
 import os
 
+import logging
+from logging.handlers import WatchedFileHandler
+
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
@@ -8,6 +11,7 @@ from flask.ext.login import LoginManager
 from flask.ext.cache import Cache
 from flask_wtf.csrf import CsrfProtect
 
+# Use gevent if activated
 # Optionally, set up psycopg2 & SQLAlchemy to be greenlet-friendly.
 # Note: psycogreen does not really monkey patch psycopg2 in the
 # manner that gevent monkey patches socket.
@@ -25,10 +29,29 @@ if "PSYCOGREEN" in os.environ:
 else:
     using_gevent = False
 
+# App initialization
 app = Flask(__name__, static_folder='static', static_url_path='/static')
+
+# Load default settings
 app.config.from_object('mailflow.settings')
+# Load production and development settings
+app.config.from_pyfile('../local_settings.py', silent=True)
 app.config.from_envvar('MAILFLOW_CONFIG', silent=True)
 
+# Configure logging
+if not app.debug:
+    handler = WatchedFileHandler(app.config['LOG_FILE'])
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    handler.setLevel(getattr(logging, app.config['LOG_LEVEL']))
+else:
+    # Development server will intercept logging automatically
+    # so no need for StreamHandler
+    handler = logging.NullHandler()
+    handler.setLevel(logging.DEBUG)
+app.logger.addHandler(handler)
+
+# Configure database
 db = SQLAlchemy(app)
 if using_gevent:
     # Assuming that gevent monkey patched the builtin
@@ -37,6 +60,7 @@ if using_gevent:
     # pool class.  However, we need to make it use
     # threadlocal connections
     db.engine.pool._use_threadlocal = True
+
 restful_api = restful.Api(app)
 
 lm = LoginManager()
