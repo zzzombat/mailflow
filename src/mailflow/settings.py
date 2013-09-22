@@ -9,6 +9,15 @@ LOG_FILE = 'webapp.log'
 
 SECRET_KEY = 'Chi6riup1gaetiengaShoh=Wey1pohph0ieDaes7eeph'
 
+STORAGE_CLASS = 'fs.contrib.davfs.DAVFS'
+STORAGE_ARGS = {
+    'url': 'http://localhost/media',
+    'credentials': {
+        'username': 'admin',
+        'password': '$up3r$3cr3t'
+    }
+}
+
 INBOX_LOGIN_LENGTH = 16
 INBOX_PASSWORD_LENGTH = 16
 INBOX_PAGE_SIZE = 50
