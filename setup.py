@@ -25,6 +25,7 @@ requires = [
     'flask-restful',
     'Flask-Cache',
     'Flask-Script',
+    'celery'
 ]
 
 setup(

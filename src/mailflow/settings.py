@@ -1,3 +1,4 @@
+# General app configuration
 SQLALCHEMY_DATABASE_URI = "postgres://mailflow.user:1234@localhost/mailflow"
 SQLALCHEMY_POOL_SIZE = 20
 SQLALCHEMY_POOL_TIMEOUT = 30
@@ -25,15 +26,14 @@ INBOX_PAGE_SIZE = 50
 INBOX_HOST = 'mailflow.openpz.org'
 INBOX_PORT = 25
 
-RAW_EMAIL_FOLDER = "/var/tmp"
-
-RABBITMQ_URI = 'amqp://mailflow:youneverguess@localhost//mail'
-RABBITMQ_EXCHANGE_NAME = 'mail'
-RABBITMQ_MAIL_QUEUE_PREFIX = 'newmail'
-
 WTF_CSRF_TIME_LIMIT = 21600
 
 CACHE_TYPE = 'memcached'
 CACHE_DEFAULT_TIMEOUT = 300
 
 CACHE_MEMCACHED_SERVERS = ('localhost:11211', )
+
+# Celery configuration
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_IMPORTS = ("mailflow.tasks", )
+CELERY_TASK_SERIALIZER = 'json'

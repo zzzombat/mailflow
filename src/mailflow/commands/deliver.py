@@ -4,7 +4,9 @@ import pyzmail
 
 from flask.ext.script import Command, Option
 
-from mailflow.front import models, app
+from mailflow.front import app
+from mailflow.storage import fs
+from mailflow.tasks import save_email
 
 
 class Deliver(Command):
@@ -16,38 +18,9 @@ class Deliver(Command):
     ]
 
     def run(self, user, recipient, sender):
-        inbox = models.Inbox.query.filter(models.Inbox.login == user).first()
-
         app.logger.info("new message by user '%s' from '%s' to '%s'", user, sender, recipient)
         input = sys.stdin.read()
+        filename = hashlib.sha1(input).hexdigest() + '.eml'
+        fs.setcontents(filename, input)
 
-        try:
-            self.parse_message(inbox, sender, recipient, input)
-            return 0
-        except Exception:
-            app.logger.exception('error occured during message parsing')
-            print >> sys.stderr, "Internal error"
-            return 1
-
-    def parse_message(self, inbox, mail_from, rcpt_to, raw_message):
-        parsed_message = pyzmail.PyzMessage.factory(raw_message)
-        message = models.Message()
-
-        message.inbox = inbox
-        message.from_addr = mail_from
-        message.to_addr = rcpt_to
-        message.subject = parsed_message.get_subject()
-        for part in parsed_message.mailparts:
-            if not part.is_body:
-                continue
-            if part.type == 'text/plain':
-                message.body_plain = part.get_payload()
-            if part.type == 'text/html':
-                message.body_html = part.get_payload()
-
-        message.source = hashlib.sha1(raw_message).hexdigest()
-        message.get_source_file('w').write(raw_message)
-
-        models.db.session.add(message)
-        models.db.session.commit()
-        return message
+        save_email.delay(user, sender, recipient, filename)

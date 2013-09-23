@@ -7,9 +7,7 @@ from sqlalchemy import select, func
 from sqlalchemy.event import listen
 from sqlalchemy.orm import relationship, column_property
 
-from mailflow.front import db, cache
-from mailflow import storage
-from mailflow import settings
+from mailflow.front import db, cache, app
 
 
 roles_users = db.Table(
@@ -86,9 +84,6 @@ class Message(db.Model, GeneralMixin):
     source = db.Column(db.Text())
     inbox = relationship("Inbox", backref='messages', cascade="all")
 
-    def get_source_file(self, mode='ab+'):
-        return storage.fs.open(self.source, mode)
-
 
 def invalidate_message_cache(mapper, connect, target):
     invalidate_inbox_cache(mapper, connect, target.inbox)
@@ -127,8 +122,8 @@ class Inbox(db.Model, GeneralMixin):
 
     @cache.memoize(3600)
     def messages_page(self, page):
-        limit = page * settings.INBOX_PAGE_SIZE
-        offset = (page - 1) * settings.INBOX_PAGE_SIZE
+        limit = page * app.config['INBOX_PAGE_SIZE']
+        offset = (page - 1) * app.config['INBOX_PAGE_SIZE']
 
         return db.session.query(Message) \
             .filter(Message.inbox == self) \
@@ -138,7 +133,7 @@ class Inbox(db.Model, GeneralMixin):
 
     @property
     def page_count(self):
-        return int(math.ceil(float(self.message_count) / float(settings.INBOX_PAGE_SIZE)))
+        return int(math.ceil(float(self.message_count) / float(app.config['INBOX_PAGE_SIZE'])))
 
     def truncate(self):
         db.session.query(Message) \
@@ -149,10 +144,10 @@ class Inbox(db.Model, GeneralMixin):
 
     def generate_credentials(self):
         if not self.login:
-            self.login = _generate_string(settings.INBOX_LOGIN_LENGTH)
+            self.login = _generate_string(app.config['INBOX_LOGIN_LENGTH'])
 
         if not self.password:
-            self.password = _generate_string(settings.INBOX_PASSWORD_LENGTH)
+            self.password = _generate_string(app.config['INBOX_PASSWORD_LENGTH'])
 
 
 def invalidate_inbox_cache(mapper, connect, target):

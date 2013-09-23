@@ -9,6 +9,8 @@ from flask.ext import restful
 from flask.ext.login import LoginManager
 from flask.ext.cache import Cache
 from flask_wtf.csrf import CsrfProtect
+from mailflow.front.utils import make_celery
+
 
 # Use gevent if activated
 # Optionally, set up psycopg2 & SQLAlchemy to be greenlet-friendly.
@@ -16,7 +18,6 @@ from flask_wtf.csrf import CsrfProtect
 # manner that gevent monkey patches socket.
 #
 if "PSYCOGREEN" in os.environ:
-
     # Do our monkey patching
     #
     from gevent.monkey import patch_all
@@ -50,7 +51,7 @@ else:
     handler.setLevel(logging.DEBUG)
 app.logger.addHandler(handler)
 
-# Configure database
+    # Configure database
 db = SQLAlchemy(app)
 if using_gevent:
     # Assuming that gevent monkey patched the builtin
@@ -59,6 +60,8 @@ if using_gevent:
     # pool class.  However, we need to make it use
     # threadlocal connections
     db.engine.pool._use_threadlocal = True
+
+celery = make_celery(app)
 
 restful_api = restful.Api(app)
 
@@ -69,7 +72,7 @@ CsrfProtect(app)
 
 cache = Cache(app)
 
-import views, models, admin, api
+import views, admin, api
 
 restful_api.add_resource(api.Message, '/api/message/<int:message_id>')
 restful_api.add_resource(api.InboxList, '/api/inbox')
