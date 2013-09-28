@@ -5,7 +5,7 @@ from random import sample
 
 from sqlalchemy import select, func
 from sqlalchemy.event import listen
-from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.orm import relationship, column_property, joinedload
 
 from mailflow.front import db, cache, app
 
@@ -83,6 +83,25 @@ class Message(db.Model, GeneralMixin):
     body_html = db.Column(db.Text())
     source = db.Column(db.Text())
     inbox = relationship("Inbox", backref='messages', cascade="all")
+
+    @staticmethod
+    def get_with_inbox(cls, pk):
+        return cls.query \
+            .filter_by(id=pk) \
+            .options(joinedload(cls.inbox)) \
+            .first()
+
+    def to_dict(self, with_inbox_id=False):
+        data = dict(
+            id=self.id,
+            from_addr=self.from_addr,
+            to_addr=self.to_addr,
+            subject=self.subject,
+            creation_date=self.creation_date.strftime('%s%f')[:-3]
+        )
+        if with_inbox_id is True:
+            data['inbox_id'] = self.inbox_id
+        return data
 
 
 def invalidate_message_cache(mapper, connect, target):

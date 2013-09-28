@@ -37,3 +37,7 @@ CACHE_MEMCACHED_SERVERS = ('localhost:11211', )
 CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_IMPORTS = ("mailflow.tasks", )
 CELERY_TASK_SERIALIZER = 'json'
+
+NEW_MESSAGE_QUEUE_PREFIX = "newmail"
+NEW_MESSAGE_EXCHANGE_NAME = "newmail"
+NEW_MESSAGE_QUEUE_POSTFIX_LENGTH = 10

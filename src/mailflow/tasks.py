@@ -1,6 +1,10 @@
 import pyzmail
+
+from kombu import Connection
 from mailflow.storage import fs
-from mailflow.front import celery, models
+from mailflow.front import celery, models, app
+
+from messaging import mail_exchange, get_routing_key
 
 
 @celery.task
@@ -30,3 +34,10 @@ def save_email(inbox_login, mail_from, rcpt_to, raw_message_file):
 
     models.db.session.add(message)
     models.db.session.commit()
+
+    with Connection(app.config['CELERY_BROKER_URL']) as conn:
+        with conn.Producer(serializer='json', exchange=mail_exchange) as producer:
+            producer.publish(
+                message.to_dict(with_inbox_id=True),
+                routing_key=get_routing_key(inbox.user_id, message.id),
+            )

@@ -24,13 +24,22 @@ function DashboardInboxesCtrl($scope, $rootScope, $routeParams, $location, $time
         });
     };
 
-    $scope.syncInboxes = function(delay) {
-        $scope.inboxesWatcher = $timeout(function(){
-            $scope.getInboxes(function(inboxes){
-                $scope.inboxes = inboxes;
-                $scope.syncInboxes(delay);
-            });
-        }, delay);
+    $scope.syncInboxes = function() {
+        $scope.message_source = new EventSource('/api/message/update');
+        $scope.message_source.onmessage = function (event) {
+            var message = JSON.parse(event.data);
+            for (var i = 0; i < $scope.inboxes.count; i++) {
+                if ($scope.inboxes.data[i].id == message.inbox_id) {
+                    $scope.$apply(function(){
+                        $scope.inboxes.data[i].total_messages += 1;
+                        if (message.inbox_id == $scope.currentInboxId) {
+                            $rootScope.$broadcast('newMessage', message);
+                        }
+                    });
+                    break;
+                };
+            };
+        };
     };
 
     $scope.inboxes = $scope.getInboxes(function(inboxes) {
@@ -54,23 +63,7 @@ function DashboardInboxesCtrl($scope, $rootScope, $routeParams, $location, $time
     });
 
     $scope.$broadcast('inboxUpdate');
-    $scope.syncInboxes(5000);
-    $scope.$watch('inboxes', function(oldValues, newValues) {
-        var oldInbox, newInbox, length;
-        length = Math.max(newValues.count, oldValues.count);
-        for (var i=0; i<length; i++) {
-            if (oldValues.data[i] && oldValues.data[i].id == $scope.currentInboxId) {
-                oldInbox = oldValues.data[i];
-            }
-            if (newValues.data[i] && newValues.data[i].id == $scope.currentInboxId) {
-                newInbox = newValues.data[i];
-            }
-        };
-        if (oldInbox && newInbox && oldInbox.total_messages != newInbox.total_messages) {
-            $rootScope.$broadcast('messagesUpdate');
-        }
-    });
-
+    $scope.syncInboxes();
     $scope.$on('$destroy', function(){
         $timeout.cancel($scope.inboxesWatcher);
     });
@@ -119,10 +112,16 @@ function DashboardInboxCtrl($scope, $rootScope, $http, $routeParams, Inbox) {
 
     $scope.getInboxAndCopy();
     $scope.$on('inboxUpdate', $scope.getInboxAndCopy);
-    $scope.$on('messagesUpdate', function () {
-        $scope.getInbox(function (inbox) {
-            $scope.inbox = inbox;
-        });
+    $scope.$on('newMessage', function (event, message) {
+        if (page == 1) {
+            $scope.inbox.messages.unshift(message);
+            $scope.inbox.total_messages += 1;
+            $scope.inbox.total_pages = Math.ceil($scope.inbox.total_messages / $scope.inbox.messages_on_page);
+        } else {
+            $scope.getInbox(function (inbox) {
+                $scope.inbox = inbox;
+            });
+        };
     });
 }
 

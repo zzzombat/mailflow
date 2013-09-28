@@ -1,12 +1,18 @@
-from flask import request
-from flask.ext import restful
-from mailflow.front import models, app
-from sqlalchemy.exc import IntegrityError
+import json
+import random
 from functools import wraps
 
+from kombu import Connection, Queue
+from flask import request, Response
+from flask.ext import restful
+from sqlalchemy.exc import IntegrityError
 from flask.ext.login import current_user
 
+from mailflow.front import models, app
+from mailflow import messaging
+
 from forms import MessageListForm, InboxForm
+from models import db
 
 
 def api_login_required(funk):
@@ -20,6 +26,37 @@ def api_login_required(funk):
 
 def error(code, message, **kwargs):
     return dict(status=code, message=message, **kwargs), code
+
+
+def email_update_stream(user_id):
+    queue = Queue(
+        messaging.get_routing_key(
+            user_id,
+            random.randint(0, 10 ** app.config['NEW_MESSAGE_QUEUE_POSTFIX_LENGTH'])
+        ),
+        routing_key=messaging.get_routing_key(user_id, '*'),
+        exchange=messaging.mail_exchange,
+        durable=False,
+        auto_delete=True
+    )
+    with Connection(app.config['CELERY_BROKER_URL']) as conn:
+        with conn.SimpleBuffer(queue, no_ack=False) as buffer:
+            while True:
+                yield buffer.get(block=True)
+
+
+@api_login_required
+@app.route('/api/message/update')
+def message_update():
+    user_id = current_user.id
+    db.session.close()
+    return Response(
+        (
+            'data: {0}\n\n'.format(message.body)
+            for message in email_update_stream(user_id)
+        ),
+        mimetype='text/event-stream'
+    )
 
 
 class Message(restful.Resource):
@@ -110,16 +147,7 @@ class Inbox(restful.Resource):
             'total_messages': inbox.message_count,
             'page_number': page,
             'total_pages': inbox.page_count,
-            'messages': [
-                dict(
-                    id=m.id,
-                    from_addr=m.from_addr,
-                    to_addr=m.to_addr,
-                    subject=m.subject,
-                    creation_date=m.creation_date.strftime('%s%f')[:-3]
-                )
-                for m in messages
-            ]
+            'messages': [m.to_dict() for m in messages]
         }
 
     @api_login_required
