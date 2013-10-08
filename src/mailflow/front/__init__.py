@@ -41,17 +41,17 @@ app.config.from_envvar('MAILFLOW_CONFIG', silent=True)
 # Configure logging
 if not app.debug:
     handler = WatchedFileHandler(app.config['LOG_FILE'])
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
     handler.setLevel(getattr(logging, app.config['LOG_LEVEL']))
 else:
     # Development server will intercept logging automatically
     # so no need for StreamHandler
-    handler = logging.NullHandler()
+    handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
 app.logger.addHandler(handler)
 
-    # Configure database
+# Configure database
 db = SQLAlchemy(app)
 if using_gevent:
     # Assuming that gevent monkey patched the builtin
