@@ -9,6 +9,9 @@ from flask.ext import restful
 from flask.ext.login import LoginManager
 from flask.ext.cache import Cache
 from flask_wtf.csrf import CsrfProtect
+from flask.ext.assets import Environment
+
+from mailflow.front.assets import js_lib, js
 from mailflow.front.utils import make_celery
 
 
@@ -71,6 +74,10 @@ lm.init_app(app)
 CsrfProtect(app)
 
 cache = Cache(app)
+
+assets = Environment(app)
+assets.register('js_lib', js_lib)
+assets.register('js', js)
 
 import views, admin, api
 

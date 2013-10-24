@@ -25,6 +25,8 @@ requires = [
     'flask-restful',
     'Flask-Cache',
     'Flask-Script',
+    'Flask-Assets',
+    'jsmin',
     'celery'
 ]
 

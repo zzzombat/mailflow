@@ -6,20 +6,16 @@
 
 
 {% block css %}
-<link href="../static/styles/main.css" rel="stylesheet">
+<link href="/static/styles/main.css" rel="stylesheet">
 {% endblock %}
 
 {% block js %}
-<script src="/static/js/lib/jquery.min.js" type="text/javascript"></script>
-<script src="/static/js/lib/bootstrap.min.js" type="text/javascript"></script>
-<script src="/static/js/lib/angular.min.js" type="text/javascript"></script>
-<script src="/static/js/lib/angular-route.min.js" type="text/javascript"></script>
-<script src="/static/js/lib/angular-sanitize.min.js" type="text/javascript"></script>
-<script src="/static/js/app.js" type="text/javascript"></script>
-<script src="/static/js/controllers.js" type="text/javascript"></script>
-<script src="/static/js/services.js" type="text/javascript"></script>
-<script src="/static/js/filters.js" type="text/javascript"></script>
-<script src="/static/js/lib/angular-resource.js" type="text/javascript"></script>
+    {% assets "js_lib" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+    {% endassets %}
+    {% assets "js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+    {% endassets %}
 {% endblock %}
 
 {% block content %}
