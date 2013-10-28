@@ -1,4 +1,3 @@
-import json
 import random
 from functools import wraps
 
@@ -39,6 +38,7 @@ def email_update_stream(user_id):
         durable=False,
         auto_delete=True
     )
+
     with Connection(app.config['CELERY_BROKER_URL']) as conn:
         with conn.SimpleBuffer(queue, no_ack=False) as buffer:
             while True:
@@ -144,6 +144,7 @@ class Inbox(restful.Resource):
             'host': app.config['INBOX_HOST'],
             'port': app.config['INBOX_PORT'],
             'messages_on_page': len(messages),
+            'max_messages_on_page': app.config['INBOX_PAGE_SIZE'],
             'total_messages': inbox.message_count,
             'page_number': page,
             'total_pages': inbox.page_count,

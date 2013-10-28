@@ -14,7 +14,9 @@ js_lib = Bundle(
 
 js = Bundle(
     'js/app.js',
-    'js/controllers.js',
+    'js/controllers/inbox_list.js',
+    'js/controllers/inbox.js',
+    'js/controllers/message.js',
     'js/services.js',
     'js/filters.js',
     'js/routes.js',

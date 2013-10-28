@@ -32,7 +32,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr data-ng-repeat="message in inbox.messages|limitTo:inbox.messages_on_page">
+              <tr data-ng-repeat="message in inbox.messages|limitTo:inbox.max_messages_on_page">
                 <td>{{message.id}}</td>
                 <td>{{message.from_addr}}</td>
                 <td>{{message.to_addr}}</td>
